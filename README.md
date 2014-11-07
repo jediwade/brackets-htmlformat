@@ -1,4 +1,4 @@
-bracketsHTMLFormat
+brackets-htmlformat
 ==================
 
 Brackets extension adding HTML Format commands to menu bar and common keyboard shortcuts.
