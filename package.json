@@ -1,0 +1,12 @@
+{
+    "name": "htmlFormat",
+    "title": "HTML Format",
+    "description": "An extension to containing useful HTML editing commands.",
+    "homepage": "https://github.com/jediwade/bracketsHTMLFormat",
+    "version": "1.0.0",
+    "author": "Wade Walker <wadedwalker@gmail.com> (http://wadedwalker.com)",
+    "license": "MIT",
+    "engines": {
+        "brackets": ">=0.40.0"
+    }
+}
