@@ -114,7 +114,7 @@ define(function (require, exports, module) {
     * @type {Menu}
     * @private
     */
-    var _htmlFormatMenu;
+    var _htmlFormatMenu = null;
     
     /**
     * Array of all the commands added to the menu bar.
@@ -524,10 +524,10 @@ define(function (require, exports, module) {
         if (newFile !== null) {
             var ext = FileUtils.getFileExtension(newFile.toString().toLowerCase());
             
-            if (_htmlFormatMenu === null && (ext.indexOf("htm") !== -1 || ext.indexOf("php") !== -1 || ext.indexOf("asp") !== -1)) {
+            if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && (ext.indexOf("htm") !== -1 || ext.indexOf("php") !== -1 || ext.indexOf("asp") !== -1)) {
                 _addMenuItems();
             }
-            else if (_htmlFormatMenu !== null) {
+            else if (_htmlFormatMenu !== null && _htmlFormatMenu !== undefined) {
                 _removeMenuItems();
             }
         }
