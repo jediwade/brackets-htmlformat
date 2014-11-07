@@ -567,5 +567,7 @@ define(function (require, exports, module) {
     //------------------------------------------------------------------------------------------------------------//
     _commands.push(CommandManager.register(INSERT_TAG_MENU_NAME, INSERT_TAG_COMMAND_ID, _blankTag));
     
+    _onCurrentFileChange(null, DocumentManager.getCurrentDocument.file, null, null, null)
+    
     $(MainViewManager).on("currentFileChange", _onCurrentFileChange);
 });
