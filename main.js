@@ -174,14 +174,26 @@ define(function (require, exports, module) {
 		_editor = EditorManager.getCurrentFullEditor();
         _lng = 0;// reset selected text length
         
+        // if copy is highlighted, surround copy in HTML tag.
         if (_editor.hasSelection()) {
             _selection = _editor.getSelection();
             _lng = _selection.end.ch - _selection.start.ch;
             _currentDoc.replaceRange("<" + tag + ">" + _editor.getSelectedText() + "</" + tag + ">", _selection.start, _selection.end);
             _editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
-        } else {
+        }
+        
+        // otherwise, insert HTML tag at cursor location and position the cursor in between the opening/closing tag
+        else {
             _currentDoc.replaceRange("<" + tag + ">" + "</" + tag + ">", _editor.getCursorPos());
             _editor.setCursorPos(_editor.getCursorPos().line, _editor.getCursorPos().ch - tag.length - 3);
+        }
+        
+        // clear out variable references if not using the _blankTag() method.
+        if (tag !== "") {
+            _currentDoc = null;
+            _editor = null;
+            _selection = null;
+            _lng = 0;
         }
 	}
     
@@ -224,6 +236,10 @@ define(function (require, exports, module) {
             _currentDoc.replaceRange(_tagStart + _style + ">" + _tagEnd, _editor.getCursorPos());
             _editor.setCursorPos(_editor.getCursorPos().line, _editor.getCursorPos().ch - _tagEnd.length);
         }
+        
+        _currentDoc = null;
+        _editor = null;
+        _selection = null;
 	}
     
     //------------------------------------------------------------------------------------------------------------//
@@ -373,6 +389,9 @@ define(function (require, exports, module) {
         KeyBindingManager.removeGlobalKeydownHook(listener);
         event.preventDefault();
         event.stopPropagation();
+        _currentDoc = null;
+        _currentPos = null;
+        _editor = null;
     }
     
     //------------------------------------------------------------------------------------------------------------//
@@ -523,11 +542,12 @@ define(function (require, exports, module) {
     function _onCurrentFileChange(e, newFile, newPaneId, oldFile, oldPaneId) {
         if (newFile !== null) {
             var ext = FileUtils.getFileExtension(newFile.toString().toLowerCase());
+            var shouldAdd = (ext.indexOf("htm") !== -1 || ext.indexOf("php") !== -1 || ext.indexOf("asp") !== -1);
             
-            if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && (ext.indexOf("htm") !== -1 || ext.indexOf("php") !== -1 || ext.indexOf("asp") !== -1)) {
+            if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && (shouldAdd === true)) {
                 _addMenuItems();
             }
-            else if (_htmlFormatMenu !== null && _htmlFormatMenu !== undefined) {
+            else if ((_htmlFormatMenu !== null && _htmlFormatMenu !== undefined) && (shouldAdd === false)) {
                 _removeMenuItems();
             }
         }
