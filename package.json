@@ -3,7 +3,7 @@
     "title": "HTML Format",
     "description": "An extension to containing HTML editing commands.",
     "homepage": "https://github.com/jediwade/brackets-htmlformat",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "author": "Wade Walker <wadedwalker@gmail.com> (http://wadedwalker.com)",
     "license": "MIT",
     "engines": {
