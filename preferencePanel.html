@@ -1,0 +1,25 @@
+<div class="modal">
+	<div id="preference_title">
+		<h1 class="dialog-title">{{TITLE_PREFERENCES}}</h1>
+	</div>
+	<div id="warning">
+		{{SHORTCUTS_WARNING_1}}<br />
+		{{SHORTCUTS_WARNING_2}}
+	</div>
+	<div id="preference_body" class="modal-body no-padding">
+		<form id="preferenceForm">
+			<div id="boldStrong" class="bold_italic">
+				<label><input type="checkbox" />{{BOLD_STRONG}}</label>
+			</div>
+			<div id="italicEm" class="bold_italic">
+				<label><input type="checkbox" />{{ITALIC_EM}}</label>
+			</div>
+			
+			<div id="shortcuts"></div>
+		</form>
+	</div>
+	<div id="preference_footer" class="modal-footer">
+		<button class="dialog-button btn left" data-button-id="close">{{BTN_CANCEL}}</button>
+		<button class="dialog-button btn primary" id="btn_save">{{BTN_SAVE}}</button>
+	</div>
+</div>
