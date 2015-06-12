@@ -1,0 +1,79 @@
+#preference_title {
+	border-bottom:1px solid #aaaaaa;
+	padding:5px 0;
+	text-align:center;
+}
+
+#preference_title, #preference_footer {
+	background-color: #d5d5d5;
+}
+
+#preference_footer {
+	border-top:1px solid #aaaaaa;
+}
+
+#warning {
+	background-color: #bbbbbb;
+	border-bottom:1px solid #aaaaaa;
+	padding: 5px 50px;
+	text-align: center;
+}
+
+#preference_body {
+	height:300px !important;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.bold_italic {
+	padding:15px 20px 11px 20px;
+	border-bottom:1px solid #cccccc;
+}
+
+.shortcut, .shortcut_label, .shortcut_modifiers {
+	vertical-align:middle;
+}
+
+.shortcut {
+	padding:15px 20px 15px 20px;
+	border-bottom:1px solid #cccccc;
+}
+
+.shortcut:nth-child(even), .bold_italic:nth-child(even)/*, #list ul li:nth-child(even)*/ {
+	background-color: #e8e8e8;
+}
+
+.shortcut:last-child {
+	border-bottom:none;
+}
+
+.shortcut_label {
+	padding-bottom:3px;
+	font-weight: bold;
+}
+
+.shortcut_modifiers {
+	/*text-align:left;*/
+}
+
+.shortcut_modifiers input, .shortcut_modifiers label {
+	margin:0 !important;
+	padding:0 !important;
+}
+.shortcut_modifiers label {
+    display:inline-block !important;
+	margin-right:10px !important;
+	margin-left:10px !important;
+}
+.shortcut_modifiers label:first-child {
+	margin-left:0 !important;
+}
+.shortcut_modifiers > input {
+	margin-left:10px !important;
+}
+.shortcut_modifier_char {
+	width:2em !important;
+	text-align:center !important;
+    position: relative !important;
+    bottom: 2px !important;
+}
