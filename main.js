@@ -869,9 +869,9 @@ define(function (require, exports, module) {
 		_updatePreferenceHTML(PreferenceStrings.EMPTY_TAG, _preferences.get(PreferenceStrings.EMPTY_TAG));
 		_updatePreferenceHTML(PreferenceStrings.PREFERENCES, _preferences.get(PreferenceStrings.PREFERENCES));
 		
-		// listen for keypresses on any of the text input fields within the preference panel
+		// listen for keypresses and checkboxes on any of the form elements within the preference panel
 		$("#preferenceForm").on("change", function (e) {
-			if (e.target.type === "checkbox") {
+			if (e.target.type === "checkbox" && $(e.target.parentElement.parentElement).hasClass("bold_italic") == false) {
 				_checkCurrentPrefernces(e.target.parentElement.parentElement.parentElement.getAttribute("id"));
 			}
 		});
