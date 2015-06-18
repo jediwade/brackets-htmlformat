@@ -209,22 +209,6 @@ define(function (require, exports, module) {
 	
 	ExtensionUtils.loadStyleSheet(module, "preferencePanel.css");
 	
-	// Clean preferences HTML by removing additional HTML if the OS is not Mac and changing CTRL to CMD if OS is Mac.
-	var _count = 0;
-	if (_platform === "mac") {
-		while (_count !== -1) {
-			_preferencePanel = _preferencePanel.replace("MODIFIER_CONTROL_CMD", "MODIFIER_CMD");
-			_count = _preferencePanel.indexOf("MODIFIER_CONTROL_CMD");
-		}
-	}
-	else {
-		_count = 0;
-		while (_count !== -1) {
-			_preferencePanel = _preferencePanel.replace("<label><input class=\"shortcut_modifier_ctrl\" type=\"checkbox\" title=\"{{TITLE_CTRL}}\" /> {{MODIFIER_CONTROL}}</label>&nbsp;&nbsp;+&nbsp;&nbsp;", "");
-			_count = _preferencePanel.indexOf("<label><input class=\"shortcut_modifier_ctrl\" type=\"checkbox\" title=\"{{TITLE_CTRL}}\" /> {{MODIFIER_CONTROL}}</label>&nbsp;&nbsp;+&nbsp;&nbsp;");
-		}
-	}
-	
 	// generate list of keyboard shortcuts for HTML Format Preferences screen
 	var prefString = "";
 	var prefStringProp;
@@ -244,6 +228,22 @@ define(function (require, exports, module) {
 	}
 	
 	_preferencePanel = _preferencePanel.replace("<div id=\"shortcuts\"></div>", prefString);
+	
+	// Clean preferences HTML by removing additional HTML if the OS is not Mac and changing CTRL to CMD if OS is Mac.
+	var _count = 0;
+	if (_platform === "mac") {
+		while (_count !== -1) {
+			_preferencePanel = _preferencePanel.replace("MODIFIER_CONTROL_CMD", "MODIFIER_CMD");
+			_count = _preferencePanel.indexOf("MODIFIER_CONTROL_CMD");
+		}
+	}
+	else {
+		_count = 0;
+		while (_count !== -1) {
+			_preferencePanel = _preferencePanel.replace("<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+", "");
+			_count = _preferencePanel.indexOf("<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+");
+		}
+	}
 
 	var _preferenceHTML = Mustache.render(_preferencePanel, Strings);
 	var _control = (_platform === "mac") ? "Cmd" : "Ctrl";
@@ -894,6 +894,8 @@ define(function (require, exports, module) {
 		$("#btn_save").on("click", function (e) {
 			_preferences.set("boldUsesStrong", $("#boldStrong input").prop("checked"));
 			_preferences.set("italicUsesEm", $("#italicEm input").prop("checked"));
+			_boldUsesStrong = _preferences.get("boldUsesStrong");
+			_italicUsesEm = _preferences.get("italicUsesEm");
 			
 			if (_duplicateShortcuts == false) {
 				_setPreferenceValues(PreferenceStrings.BOLD_TAG);
