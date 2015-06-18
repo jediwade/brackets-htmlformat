@@ -1,61 +1,23 @@
-#preference_title {
-	border-bottom:1px solid #aaaaaa;
-	padding:5px 0;
-	text-align:center;
-}
-
-#preference_title, #preference_footer {
-	background-color: #d5d5d5;
-}
-
-#preference_footer {
-	border-top:1px solid #aaaaaa;
-}
-
 #warning {
-	background-color: #bbbbbb;
 	border-bottom:1px solid #aaaaaa;
-	padding: 5px 50px;
+	padding: 10px 0px;
 	text-align: center;
+	display: block;
 }
-
-#preference_body {
-	height:300px !important;
-	overflow-y: auto;
-	overflow-x: hidden;
+#preferenceForm {
+	margin:0px !important;
+	padding:0px !important;
 }
-
-.bold_italic {
-	padding:15px 20px 11px 20px;
-	border-bottom:1px solid #cccccc;
+.table-striped #preferenceForm td {
+	border-bottom: 1px solid #aaaaaa !important;
 }
-
-.shortcut, .shortcut_label, .shortcut_modifiers {
-	vertical-align:middle;
+.dark .table-striped #preferenceForm td {
+	border-bottom: 1px solid #e6e9e9 !important;
 }
-
-.shortcut {
-	padding:15px 20px 15px 20px;
-	border-bottom:1px solid #cccccc;
-}
-
-.shortcut:nth-child(even), .bold_italic:nth-child(even)/*, #list ul li:nth-child(even)*/ {
-	background-color: #e8e8e8;
-}
-
-.shortcut:last-child {
-	border-bottom:none;
-}
-
 .shortcut_label {
 	padding-bottom:3px;
 	font-weight: bold;
 }
-
-.shortcut_modifiers {
-	/*text-align:left;*/
-}
-
 .shortcut_modifiers input, .shortcut_modifiers label {
 	margin:0 !important;
 	padding:0 !important;
