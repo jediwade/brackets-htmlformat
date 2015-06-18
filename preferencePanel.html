@@ -1,25 +1,33 @@
 <div class="modal">
-	<div id="preference_title">
+	<div class="modal-header">
 		<h1 class="dialog-title">{{TITLE_PREFERENCES}}</h1>
 	</div>
-	<div id="warning">
-		{{SHORTCUTS_WARNING_1}}<br />
-		{{SHORTCUTS_WARNING_2}}
-	</div>
-	<div id="preference_body" class="modal-body no-padding">
+	
+	<div class="modal-body no-padding table-striped">
+		<div id="warning">
+			{{SHORTCUTS_WARNING_1}}<br />
+			{{SHORTCUTS_WARNING_2}}
+		</div>
+		
 		<form id="preferenceForm">
-			<div id="boldStrong" class="bold_italic">
-				<label><input type="checkbox" />{{BOLD_STRONG}}</label>
-			</div>
-			<div id="italicEm" class="bold_italic">
-				<label><input type="checkbox" />{{ITALIC_EM}}</label>
-			</div>
-			
-			<div id="shortcuts"></div>
+			<table class="table">
+				<tr>
+					<td id="boldStrong" class="bold_italic">
+						<label><input type="checkbox" />{{BOLD_STRONG}}</label>
+					</td>
+				</tr>
+				<tr>
+					<td id="italicEm" class="bold_italic">
+						<label><input type="checkbox" />{{ITALIC_EM}}</label>
+					</td>
+				</tr>
+				<tr id="shortcuts"></tr>
+			</table>
 		</form>
 	</div>
-	<div id="preference_footer" class="modal-footer">
+	
+	<div class="modal-footer">
 		<button class="dialog-button btn left" data-button-id="close">{{BTN_CANCEL}}</button>
-		<button class="dialog-button btn primary" id="btn_save">{{BTN_SAVE}}</button>
+		<button class="dialog-button btn primary" data-button-id="save" id="btn_save">{{BTN_SAVE}}</button>
 	</div>
 </div>
