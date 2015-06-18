@@ -1,9 +1,9 @@
 {
     "name": "brackets-htmlformat",
     "title": "HTML Format",
-    "description": "An extension containing keyboard shortcuts for adding HTML tags. List of available tags currently mirrors that of Dreamweaver.",
+    "description": "An extension to containing HTML editing commands.",
     "homepage": "https://github.com/jediwade/brackets-htmlformat",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "author": "Wade Walker <wadedwalker@gmail.com> (http://wadedwalker.com)",
     "license": "MIT",
     "engines": {
