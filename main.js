@@ -214,37 +214,31 @@ define(function (require, exports, module) {
 	var prefStringProp;
 	for (prefStringProp in PreferenceStrings) {
 		if (PreferenceStrings.hasOwnProperty(prefStringProp)) {
-			prefString +=	"<div id='" + PreferenceStrings[prefStringProp] + "' class='shortcut'>";
-			prefString +=		"<div class='shortcut_label'>{{LABEL_" + prefStringProp + "_SHORTCUT}}:</div>";
-			prefString +=		"<div class='shortcut_modifiers'>";
-			prefString +=			"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL_CMD}}</label>+";
-			prefString +=			"<label><input class='shortcut_modifier_shift' type='checkbox' title='{{TITLE_SHIFT}}' /> {{MODIFIER_SHIFT}}</label>+";
-			prefString +=			"<label><input class='shortcut_modifier_alt' type='checkbox' title='{{TITLE_ALT}}' /> {{MODIFIER_ALT}}</label>+";
-			prefString +=			"<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+";
-			prefString +=			"<input class='shortcut_modifier_char' type='text' maxlength='1' size='1' title='{{TITLE_CHARACTER}}' />";
-			prefString +=		"</div>";
-			prefString +=	"</div>";
+			prefString +=	"<tr>";
+			prefString +=		"<td>";
+			prefString +=			"<div id='" + PreferenceStrings[prefStringProp] + "' class='shortcut'>";
+			prefString +=				"<div class='shortcut_label'>{{LABEL_" + prefStringProp + "_SHORTCUT}}:</div>";
+			prefString +=				"<div class='shortcut_modifiers'>";
+			if (_platform === "mac") {
+				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CMD}}</label>+";
+			} else {
+				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL_CMD}}</label>+";
+			}
+			prefString +=					"<label><input class='shortcut_modifier_shift' type='checkbox' title='{{TITLE_SHIFT}}' /> {{MODIFIER_SHIFT}}</label>+";
+			prefString +=					"<label><input class='shortcut_modifier_alt' type='checkbox' title='{{TITLE_ALT}}' /> {{MODIFIER_ALT}}</label>+";
+			if (_platform === "mac") {
+				prefString +=				"<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+";
+			}
+			prefString +=					"<input class='shortcut_modifier_char' type='text' maxlength='1' size='1' title='{{TITLE_CHARACTER}}' />";
+			prefString +=				"</div>";
+			prefString +=			"</div>";
+			prefString +=		"</td>";
+			prefString +=	"</tr>";
 		}
 	}
 	
-	_preferencePanel = _preferencePanel.replace("<div id=\"shortcuts\"></div>", prefString);
+	_preferencePanel = _preferencePanel.replace("<tr id=\"shortcuts\"></tr>", prefString);
 	
-	// Clean preferences HTML by removing additional HTML if the OS is not Mac and changing CTRL to CMD if OS is Mac.
-	var _count = 0;
-	if (_platform === "mac") {
-		while (_count !== -1) {
-			_preferencePanel = _preferencePanel.replace("MODIFIER_CONTROL_CMD", "MODIFIER_CMD");
-			_count = _preferencePanel.indexOf("MODIFIER_CONTROL_CMD");
-		}
-	}
-	else {
-		_count = 0;
-		while (_count !== -1) {
-			_preferencePanel = _preferencePanel.replace("<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+", "");
-			_count = _preferencePanel.indexOf("<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+");
-		}
-	}
-
 	var _preferenceHTML = Mustache.render(_preferencePanel, Strings);
 	var _control = (_platform === "mac") ? "Cmd" : "Ctrl";
 	
