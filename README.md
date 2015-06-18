@@ -18,3 +18,10 @@ or change the default keyboard shortcuts.
 The issues with the add blank tag feature should be fixed. It is still, for me, a bit of a 
 complicated thing to have figured out how to do so there may be issues present still or it 
 may not be the best possible implementation of such a feature.
+
+==================
+Update - June 18, 2015
+Currently working on fixes for the preference menu when displayed using different themes other 
+than the default light theme. Fixed the Control key being listed twice for Mac OS in preferences.
+Fixed checking either Bold/Strong or Italic/Emphasis checkboxes triggering the duplicate 
+keyboard shorcut warning.
