@@ -8,18 +8,31 @@
 	margin:0px !important;
 	padding:0px !important;
 }
+label {
+	margin: 0 !important;
+}
+.table {
+	margin-bottom:0px !important;
+}
+.table td {
+	padding-top:12px !important;
+	padding-bottom:12px !important;
+}
 .table-striped #preferenceForm td {
 	border-bottom: 1px solid #aaaaaa !important;
 }
 .dark .table-striped #preferenceForm td {
 	border-bottom: 1px solid #e6e9e9 !important;
 }
+.table-striped #preferenceForm tr:last-of-type td, .dark .table-striped #preferenceForm tr:last-of-type td {
+	border-bottom-style: none !important;
+}
 .shortcut_label {
 	padding-bottom:3px;
 	font-weight: bold;
 }
-.shortcut_modifiers input, .shortcut_modifiers label {
-	margin:0 !important;
+.shortcut_modifiers input[type="text"] {
+	margin:0 0 0 10px !important;
 	padding:0 !important;
 }
 .shortcut_modifiers label {
@@ -29,9 +42,6 @@
 }
 .shortcut_modifiers label:first-child {
 	margin-left:0 !important;
-}
-.shortcut_modifiers > input {
-	margin-left:10px !important;
 }
 .shortcut_modifier_char {
 	width:2em !important;
