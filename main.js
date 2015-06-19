@@ -220,14 +220,14 @@ define(function (require, exports, module) {
 			prefString +=				"<div class='shortcut_label'>{{LABEL_" + prefStringProp + "_SHORTCUT}}:</div>";
 			prefString +=				"<div class='shortcut_modifiers'>";
 			if (_platform === "mac") {
-				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CMD}}</label>+";
+				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' />{{MODIFIER_CMD}}</label>+";
 			} else {
-				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL_CMD}}</label>+";
+				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' />{{MODIFIER_CONTROL_CMD}}</label>+";
 			}
-			prefString +=					"<label><input class='shortcut_modifier_shift' type='checkbox' title='{{TITLE_SHIFT}}' /> {{MODIFIER_SHIFT}}</label>+";
-			prefString +=					"<label><input class='shortcut_modifier_alt' type='checkbox' title='{{TITLE_ALT}}' /> {{MODIFIER_ALT}}</label>+";
+			prefString +=					"<label><input class='shortcut_modifier_shift' type='checkbox' title='{{TITLE_SHIFT}}' />{{MODIFIER_SHIFT}}</label>+";
+			prefString +=					"<label><input class='shortcut_modifier_alt' type='checkbox' title='{{TITLE_ALT}}' />{{MODIFIER_ALT}}</label>+";
 			if (_platform === "mac") {
-				prefString +=				"<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' /> {{MODIFIER_CONTROL}}</label>+";
+				prefString +=				"<label><input class='shortcut_modifier_ctrl' type='checkbox' title='{{TITLE_CTRL}}' />{{MODIFIER_CONTROL}}</label>+";
 			}
 			prefString +=					"<input class='shortcut_modifier_char' type='text' maxlength='1' size='1' title='{{TITLE_CHARACTER}}' />";
 			prefString +=				"</div>";
