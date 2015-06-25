@@ -121,6 +121,13 @@ define(function (require, exports, module) {
 	var _htmlFormatMenu = null;
 	
 	/**
+	* Array of all the dividers added to the HTML Format menu bar
+	* @type {array}
+	* @private
+	*/
+	var _htmlFormatMenuDividers = [];
+	
+	/**
 	* Array of all the commands added to the menu bar.
 	* @type {array}
 	* @private
@@ -504,7 +511,7 @@ define(function (require, exports, module) {
 	* @private
 	*/
 	function _disposeAddTagListeners(listener) {
-		$(_editor).off();
+		$(_editor).off("cursorActivity");
 		KeyBindingManager.removeGlobalKeydownHook(listener);
 		_lng = 0;
 		_currentDoc = null;
@@ -585,7 +592,7 @@ define(function (require, exports, module) {
 			_disposeAddTagListeners(_keyboardListener);
 		}
 		
-		// If the key pressed is the left arrow key, check cursor position. if cursor position is outside the open tag, end empty tag action.
+		// If the key pressed is the right arrow key, check cursor position. if cursor position is outside the open tag, end empty tag action.
 		// Because this is a keyDown event, we must check to see what the character ahead of the cursor currently is
 		else if (event.keyCode === 39 && _currentDoc.getRange(_currentPos,{line:_currentPos.line, ch:_currentPos.ch + 1}) === ">") {
 			_disposeAddTagListeners(_keyboardListener);
@@ -608,7 +615,7 @@ define(function (require, exports, module) {
 		_currentPos = _editor.getCursorPos();
 		
 		if (_currentPos.line !== _emptyTagPos.open.start.line || 
-			((_currentPos.ch < _emptyTagPos.open.start.ch || _currentPos.ch > _emptyTagPos.open.end.ch) && _currentPos.line === _emptyTagPos.open.start.line)) {
+			( (_currentPos.ch < _emptyTagPos.open.start.ch || _currentPos.ch > _emptyTagPos.open.end.ch) && _currentPos.line === _emptyTagPos.open.start.line) ) {
 				_disposeAddTagListeners(_keyboardListener, null);
 		}
 	}
@@ -702,32 +709,32 @@ define(function (require, exports, module) {
 		_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
 		
-		_htmlFormatMenu.addMenuDivider();
+		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
 		
 		_htmlFormatMenu.addMenuItem(STRIKE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(STRIKE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_STYLE)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(TELETYPE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(TELETYPE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
 		
-		_htmlFormatMenu.addMenuDivider();
+		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
 		
 		_htmlFormatMenu.addMenuItem(CODE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CODE_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(VARIABLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.VARIABLE_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(SAMPLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SAMPLE_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(KEYBOARD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.KEYBOARD_TAG)), Menus.LAST);
 		
-		_htmlFormatMenu.addMenuDivider();
+		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
 		
 		_htmlFormatMenu.addMenuItem(CITATION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CITATION_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(DEFINITION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DEFINITION_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(DELETED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DELETED_TAG)), Menus.LAST);
 		_htmlFormatMenu.addMenuItem(INSERTED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.INSERTED_TAG)), Menus.LAST);
 		
-		_htmlFormatMenu.addMenuDivider();
+		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
 		
 		_htmlFormatMenu.addMenuItem(INSERT_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.EMPTY_TAG)), Menus.LAST);
 		
-		_htmlFormatMenu.addMenuDivider();
+		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
 		
 		_htmlFormatMenu.addMenuItem(PREFERENCE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PREFERENCES)), Menus.LAST);
 		
@@ -743,8 +750,38 @@ define(function (require, exports, module) {
 	* @private
 	*/
 	function _removeMenuItems() {
+		while (_htmlFormatMenuDividers.length !== 0) {
+			_htmlFormatMenu.removeMenuDivider(_htmlFormatMenuDividers[_htmlFormatMenuDividers.length-1].id);
+			_htmlFormatMenuDividers.pop();
+		}
+		
+		_htmlFormatMenu.removeMenuItem(BOLD_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(BOLD_STYLE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(ITALIC_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(ITALIC_STYLE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(UNDERLINE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(UNDERLINE_STYLE_COMMAND_ID);
+		
+		_htmlFormatMenu.removeMenuItem(STRIKE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(STRIKE_STYLE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(TELETYPE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(TELETYPE_STYLE_COMMAND_ID);
+		
+		_htmlFormatMenu.removeMenuItem(CODE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(VARIABLE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(SAMPLE_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(KEYBOARD_COMMAND_ID);
+		
+		_htmlFormatMenu.removeMenuItem(CITATION_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(DEFINITION_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(DELETED_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(INSERTED_COMMAND_ID);
+		
+		_htmlFormatMenu.removeMenuItem(INSERT_TAG_COMMAND_ID);
+		_htmlFormatMenu.removeMenuItem(PREFERENCE_COMMAND_ID);
+		
 		// Remove HTML Format menu from menu bar and set variable reference to null
-		Menus.removeMenu(COMMAND_ID + "." + "htmlFormatMenu");
+		Menus.removeMenu(HTML_FORMAT_MENU_COMMAND_ID);
 		_htmlFormatMenu = null;
 		
 		// Disable all hotkey commands
@@ -763,7 +800,12 @@ define(function (require, exports, module) {
 		arr.push( ($("#" + target + " .shortcut_modifiers .shortcut_modifier_ctrlCmd").prop("checked")) ? _control : null );
 		arr.push( ($("#" + target + " .shortcut_modifiers .shortcut_modifier_shift").prop("checked")) ? "Shift" : null );
 		arr.push( ($("#" + target + " .shortcut_modifiers .shortcut_modifier_alt").prop("checked")) ? "Alt" : null );
-		arr.push( ($("#" + target + " .shortcut_modifiers .shortcut_modifier_ctrl").prop("checked")) ? "Ctrl" : null );
+		if (_platform === "mac") {
+			arr.push( ($("#" + target + " .shortcut_modifiers .shortcut_modifier_ctrl").prop("checked")) ? "Ctrl" : null );
+		}
+		else {
+			arr.push(null);
+		}
 		arr.push( $("#" + target + " .shortcut_modifiers .shortcut_modifier_char").prop("value") );
 		return arr;
 	}
@@ -810,7 +852,9 @@ define(function (require, exports, module) {
 		$("#" + target + " .shortcut_modifiers .shortcut_modifier_ctrlCmd").prop("checked", (pref[0] !== undefined && pref[0] !== null) ? true : false);
 		$("#" + target + " .shortcut_modifiers .shortcut_modifier_shift").prop("checked", (pref[1] !== undefined && pref[1] !== null) ? true : false);
 		$("#" + target + " .shortcut_modifiers .shortcut_modifier_alt").prop("checked", (pref[2] !== undefined && pref[2] !== null) ? true : false);
-		$("#" + target + " .shortcut_modifiers .shortcut_modifier_ctrl").prop("checked", (pref[3] !== undefined && pref[3] !== null) ? true : false);
+		if (_platform === "mac") {
+			$("#" + target + " .shortcut_modifiers .shortcut_modifier_ctrl").prop("checked", (pref[3] !== undefined && pref[3] !== null) ? true : false);
+		}
 		$("#" + target + " .shortcut_modifiers .shortcut_modifier_char").prop("value", pref[4]);
 	}
 	
@@ -823,10 +867,18 @@ define(function (require, exports, module) {
 		var okToSave = false;
 		var arr = _getPreferenceValues(target);
 		
-		if ((arr[0] !== null || arr[1] !== null || arr[2] !== null || arr[3] !== null) && arr[4] !== "") {
+		// check to make sure at least one of the modifier keys has been set
+		if (arr[0] !== null || arr[1] !== null || arr[2] !== null || arr[3] !== null) {
+			// a modifier has been set, check to see if a character has been set
+			if (arr[4] !== "") {
+				okToSave = true;
+			}
+		}
+		// no modifier key is set, check to see if there is no letter set. If so, keyboard shortcut removed, allow save
+		else if (arr[4] === "") {
 			okToSave = true;
 		}
-		// TODO add check to see if shortcut combo is already in use
+		
 		if (okToSave === true) {
 			_preferences.set(target, arr);
 		}
