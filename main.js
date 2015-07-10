@@ -288,6 +288,115 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
+	* Generates the style needed based on the parameter
+	* @private
+	*/
+	function _getStyle(style) {
+		var _style = "";
+		if (style === "bold" || style === "b" || style === "strong") {
+			_style = "font-weight:bold;";
+		}
+		else if (style === "italic" || style === "i" || style === "em") {
+			_style = "font-style:italic;";
+		}
+		else if (style === "underline" || style === "u") {
+			_style = "text-decoration:underline;";
+		}
+		else if (style === "strikethrough" || style === "s") {
+			_style = "text-decoration:line-through;";
+		}
+		else if (style === "monospace" || style === "tt") {
+			_style = "font-family:'Lucida Console', monospace;";
+		}
+		return _style;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------//
+	/**
+	* Checks if the cursor is within a style attribute. If it is, attempt to convert tag or style into inline style.
+	* @private
+	*/
+	function _checkIfWithinInlineStyle(style) {
+		var entireLine = _currentDoc.getLine(_editor.getCursorPos().line);
+		var styles = [];
+		var styleStart = 0;
+		var styleEnd;
+		var styleString = "";
+		var closingQuote;
+		var cursorPos = _editor.getCursorPos().ch;
+
+		while (styleStart !== -1) {
+			styleStart = entireLine.indexOf("style=", styleStart);
+
+			if (styleStart !== -1) {
+				closingQuote = entireLine.charAt(entireLine.indexOf("style=") + 6);// get quote type, single or double
+				styleStart += 7;// offset to start within the style attribute
+				styleEnd = entireLine.indexOf(closingQuote, styleStart);
+				styleString = entireLine.substring(styleStart, styleEnd);
+				styles.push({start:styleStart, end:styleEnd, style:styleString});
+			}
+		}
+
+		while (styles.length !== 0) {
+			if (cursorPos >= styles[styles.length-1].start && cursorPos <= styles[styles.length-1].end) {
+				if (style.length !== 0) {
+					var index = (cursorPos == styles[styles.length-1].start) ? styles[styles.length-1].start - 1 : -1;
+
+					// if not -1, meaning cursor was at beginning of the style, add a space to the string after the ";"
+					if (index !== -1) {
+						style = style + " ";
+					}
+
+					// else the cursor is not at the beginning of the style attribute
+					else {
+						var styleMod = "";
+						// set index to the last character of the styles
+						index = (cursorPos == styles[styles.length-1].end) ? styles[styles.length-1].end - 1 : -1;
+
+						// if index is -1, cursor was not at end of styles string. search for the closest ";" appearing before the cursor
+						if (index === -1) {
+							index = entireLine.lastIndexOf(";", cursorPos);
+						}
+						// cursor is at end of styles string and ";" was not detected at the end of the styles
+						else if (entireLine.charAt(index) !== ";") {
+							styleMod = ";";
+						}
+
+						// if index is -1, cursor was placed in middle of the first/only style
+						if (index === -1 || index < styles[styles.length-1].start) {
+							index = entireLine.indexOf(";", cursorPos);
+						}
+
+						// if index is -1, no ";" was found and you are a bad coder.
+						if (index === -1 || index > styles[styles.length-1].end) {
+							index = styles[styles.length-1].start-1;
+						}
+
+						// if index is not at the start, set style equal to styleMod + space + style, else set style equal to style + space
+						if (index !== styles[styles.length-1].start-1) {
+							style = styleMod + " " + style;
+						}
+						else {
+							style = style + " ";
+						}
+					}
+
+					index += 1;
+					_currentDoc.replaceRange(style, {line:_editor.getCursorPos().line, ch:index});
+				}
+				
+				return false;
+			}
+			else {
+				styles.pop();
+			}
+		}
+		
+		return true;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------//
+	/**
 	* Generates an HTML tag based on the param received.
 	* @param {string} style The HTML tag that should be generated
 	* @private
@@ -297,18 +406,21 @@ define(function (require, exports, module) {
 		_editor = EditorManager.getCurrentFullEditor();
 		_lng = 0;// reset selected text length
 		
-		// if copy is highlighted, surround copy in HTML tag.
-		if (_editor.hasSelection()) {
-			_selection = _editor.getSelection();
-			_lng = _selection.end.ch - _selection.start.ch;
-			_currentDoc.replaceRange("<" + tag + ">" + _editor.getSelectedText() + "</" + tag + ">", _selection.start, _selection.end);
-			_editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
-		}
-		
-		// otherwise, insert HTML tag at cursor location and position the cursor in between the opening/closing tag
-		else {
-			_currentDoc.replaceRange("<" + tag + ">" + "</" + tag + ">", _editor.getCursorPos());
-			_editor.setCursorPos(_editor.getCursorPos().line, _editor.getCursorPos().ch - tag.length - 3);
+		var canAdd = _checkIfWithinInlineStyle(_getStyle(tag));
+		if (canAdd === true) {
+			// if copy is highlighted, surround copy in HTML tag.
+			if (_editor.hasSelection()) {
+				_selection = _editor.getSelection();
+				_lng = _selection.end.ch - _selection.start.ch;
+				_currentDoc.replaceRange("<" + tag + ">" + _editor.getSelectedText() + "</" + tag + ">", _selection.start, _selection.end);
+				_editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
+			}
+
+			// otherwise, insert HTML tag at cursor location and position the cursor in between the opening/closing tag
+			else {
+				_currentDoc.replaceRange("<" + tag + ">" + "</" + tag + ">", _editor.getCursorPos());
+				_editor.setCursorPos(_editor.getCursorPos().line, _editor.getCursorPos().ch - tag.length - 3);
+			}
 		}
 		
 		// clear out variable references if not using the _insertEmptyTag() method.
@@ -330,34 +442,22 @@ define(function (require, exports, module) {
 		_currentDoc = DocumentManager.getCurrentDocument();
 		_editor = EditorManager.getCurrentFullEditor();
 		
-		var _tagStart = "<span style=";
-		var _style = "";
-		var _tagEnd = "</span>";
+		var canAdd = _checkIfWithinInlineStyle(_getStyle(style));
 		
-		if (style === "bold") {
-			_style = "\"font-weight:bold;\"";
-		}
-		else if (style === "italic") {
-			_style = "\"font-style:italic;\"";
-		}
-		else if (style === "underline") {
-			_style = "\"text-decoration:underline;\"";
-		}
-		else if (style === "strikethrough") {
-			_style = "\"text-decoration:line-through;\"";
-		}
-		else if (style === "monospace") {
-			_style = "\"font-family:'Lucida Console', monospace;\"";
-		}
-		
-		if (_editor.hasSelection()) {
-			_selection = _editor.getSelection();
-			_currentDoc.replaceRange(_tagStart + _style + ">" + _editor.getSelectedText() + _tagEnd, _selection.start, _selection.end);
-			_editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
-		}
-		else {
-			_currentDoc.replaceRange(_tagStart + _style + ">" + _tagEnd, _editor.getCursorPos());
-			_editor.setCursorPos(_editor.getCursorPos().line, _editor.getCursorPos().ch - _tagEnd.length);
+		if (canAdd === true) {
+			var _tagStart = "<span style=";
+			var _style = _getStyle(style);
+			var _tagEnd = "</span>";
+
+			if (_editor.hasSelection()) {
+				_selection = _editor.getSelection();
+				_currentDoc.replaceRange(_tagStart + "\"" + _style + "\"" + ">" + _editor.getSelectedText() + _tagEnd, _selection.start, _selection.end);
+				_editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
+			}
+			else {
+				_currentDoc.replaceRange(_tagStart + "\"" + _style + "\"" + ">" + _tagEnd, _editor.getCursorPos());
+				_editor.setCursorPos(_editor.getCursorPos().line, _editor.getCursorPos().ch - _tagEnd.length);
+			}
 		}
 		
 		_currentDoc = null;
@@ -509,7 +609,7 @@ define(function (require, exports, module) {
 	* @private
 	*/
 	function _disposeAddTagListeners(listener) {
-		$(_editor).off("cursorActivity");
+		_editor.off("cursorActivity");
 		KeyBindingManager.removeGlobalKeydownHook(listener);
 		_lng = 0;
 		_currentDoc = null;
@@ -656,7 +756,7 @@ define(function (require, exports, module) {
 			_emptyTagPos.close.end = {line:curPos.line, ch:curPos.ch + 3 + _lng};
 		}
 		
-		$(_editor).on("cursorActivity", _onCursorChange);
+		_editor.on("cursorActivity", _onCursorChange);
 		KeyBindingManager.addGlobalKeydownHook(_keyboardListener);
 	}
 	
@@ -765,10 +865,13 @@ define(function (require, exports, module) {
 		
 		// remove any previously set key bindings generated by Menu.addMenuItem()
 		var str = "";
-		for (var props in PreferenceStrings) {
-			str = _getShortcutString(_preferences.get(PreferenceStrings[props]));
-			if (str !== "") {
-				KeyBindingManager.removeBinding(str, _platform);
+		var prop;
+		for (prop in PreferenceStrings) {
+			if (PreferenceStrings.hasOwnProperty(prop)) {
+				str = _getShortcutString(_preferences.get(PreferenceStrings[prop]));
+				if (str !== "") {
+					KeyBindingManager.removeBinding(str, _platform);
+				}
 			}
 		}
 		
@@ -1019,5 +1122,5 @@ define(function (require, exports, module) {
 	_commands.push(CommandManager.register(Strings.LABEL_PREFERENCES_SHORTCUT, PREFERENCE_COMMAND_ID, _openPreferencesPanel));
 	
 	//------------------------------------------------------------------------------------------------------------//
-	$(MainViewManager).on("currentFileChange", _onCurrentFileChange);
+	MainViewManager.on("currentFileChange", _onCurrentFileChange);
 });
