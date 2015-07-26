@@ -3,7 +3,7 @@
 		<h1 class="dialog-title">{{TITLE_PREFERENCES}}</h1>
 	</div>
 	
-	<div class="modal-body no-padding table-striped">
+	<div id="test" class="modal-body no-padding table-striped">
 		<div id="warning">
 			{{SHORTCUTS_WARNING_1}}<br />
 			{{SHORTCUTS_WARNING_2}}
@@ -12,13 +12,18 @@
 		<form id="preferenceForm">
 			<table class="table">
 				<tr>
-					<td id="boldStrong" class="bold_italic">
+					<td id="boldStrong">
 						<label><input type="checkbox" />{{BOLD_STRONG}}</label>
 					</td>
 				</tr>
 				<tr>
-					<td id="italicEm" class="bold_italic">
+					<td id="italicEm">
 						<label><input type="checkbox" />{{ITALIC_EM}}</label>
+					</td>
+				</tr>
+				<tr>
+					<td id="rightClick">
+						<label><input type="checkbox" />{{ADD_RIGHT_CLICK}}</label>
 					</td>
 				</tr>
 				<tr id="shortcuts"></tr>
