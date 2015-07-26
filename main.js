@@ -23,7 +23,6 @@
 
 define(function (require, exports, module) {
 	'use strict';
-	
 	console.log("INITIALIZING HTML FORMAT EXTENSION");
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
@@ -41,7 +40,7 @@ define(function (require, exports, module) {
 	var ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
 	var Strings = require("strings");
 	var PreferenceStrings = require("preferenceStrings");
-	
+	var AdditionalPrefStrings = require("additionalPrefStrings");
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// CONTSTANTS
@@ -117,13 +116,6 @@ define(function (require, exports, module) {
 	* @private
 	*/
 	var _htmlFormatMenu = null;
-	
-	/**
-	* Array of all the dividers added to the HTML Format menu bar
-	* @type {array}
-	* @private
-	*/
-	var _htmlFormatMenuDividers = [];
 	
 	/**
 	* Array of all the commands added to the menu bar.
@@ -202,11 +194,22 @@ define(function (require, exports, module) {
 	var _italicUsesEm = false;
 	
 	/**
+	* Determines whether or not the <em> tag is used in place of <i> when adding an italic tag
+	* @type {boolean}
+	* @private
+	*/
+	var _addRightClick = false;
+	
+	/**
 	* Used for keeping track of duplicate keyboard shortcuts. Prevents Save button from working if true.
 	* @private
 	*/
 	var _duplicateShortcuts = false;
 	
+	/**
+	* @private
+	*/
+	var _defaultTagStyleShortcut = [null, null, null, null, ""];
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// PREFERENCES
@@ -247,39 +250,54 @@ define(function (require, exports, module) {
 	var _preferenceHTML = Mustache.render(_preferencePanel, Strings);
 	var _control = (_platform === "mac") ? "Cmd" : "Ctrl";
 	
-	if (_preferences.get("boldUsesStrong") === undefined) {
-		_preferences.set("boldUsesStrong", false);
-		_preferences.set("italicUsesEm", false);
-		
-		// command, shift, alt, control, character
+	if (_preferences.get(AdditionalPrefStrings.BOLD_USES_STRONG) === undefined) {
+		_preferences.set(AdditionalPrefStrings.BOLD_USES_STRONG, false);
+	}
+	else {
+		_boldUsesStrong = _preferences.get(AdditionalPrefStrings.BOLD_USES_STRONG);
+	}
+	if (_preferences.get(AdditionalPrefStrings.ITALIC_USES_EM) === undefined) {
+		_preferences.set(AdditionalPrefStrings.ITALIC_USES_EM, false);
+	}
+	else {
+		_italicUsesEm = _preferences.get(AdditionalPrefStrings.ITALIC_USES_EM);
+	}
+	
+	if (_preferences.get(AdditionalPrefStrings.ADD_RIGHT_CLICK) === undefined) {
+		_preferences.set(AdditionalPrefStrings.ADD_RIGHT_CLICK, false);
+	}
+	else {
+		_addRightClick = _preferences.get(AdditionalPrefStrings.ADD_RIGHT_CLICK);
+	}
+	
+	// command, shift, alt, control, character
+	if (_preferences.get(PreferenceStrings.BOLD_TAG) === undefined) {
 		_preferences.set(PreferenceStrings.BOLD_TAG, [_control, null, null, null, "B"]);
 		_preferences.set(PreferenceStrings.BOLD_STYLE, [_control, "Shift", null, null, "B"]);
+		
 		_preferences.set(PreferenceStrings.ITALIC_TAG, [_control, null, null, null, "I"]);
 		_preferences.set(PreferenceStrings.ITALIC_STYLE, [_control, "Shift", null, null, "I"]);
+		
 		_preferences.set(PreferenceStrings.UNDERLINE_TAG, [_control, null, null, null, "U"]);
 		_preferences.set(PreferenceStrings.UNDERLINE_STYLE, [_control, "Shift", null, null, "U"]);
 		
-		_preferences.set(PreferenceStrings.STRIKE_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.STRIKE_STYLE, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.TELETYPE_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.TELETYPE_STYLE, [null, null, null, null, ""]);
+		_preferences.set(PreferenceStrings.STRIKE_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.STRIKE_STYLE, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.TELETYPE_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.TELETYPE_STYLE, _defaultTagStyleShortcut);
 		
-		_preferences.set(PreferenceStrings.CODE_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.VARIABLE_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.SAMPLE_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.KEYBOARD_TAG, [null, null, null, null, ""]);
+		_preferences.set(PreferenceStrings.CODE_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.VARIABLE_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.SAMPLE_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.KEYBOARD_TAG, _defaultTagStyleShortcut);
 		
-		_preferences.set(PreferenceStrings.CITATION_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.DEFINITION_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.DELETED_TAG, [null, null, null, null, ""]);
-		_preferences.set(PreferenceStrings.INSERTED_TAG, [null, null, null, null, ""]);
+		_preferences.set(PreferenceStrings.CITATION_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.DEFINITION_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.DELETED_TAG, _defaultTagStyleShortcut);
+		_preferences.set(PreferenceStrings.INSERTED_TAG, _defaultTagStyleShortcut);
 		
 		_preferences.set(PreferenceStrings.EMPTY_TAG, [_control, null, null, null, "T"]);
 		_preferences.set(PreferenceStrings.PREFERENCES, [_control, "Shift", null, null, ","]);
-	}
-	else {
-		_boldUsesStrong = _preferences.get("boldUsesStrong");
-		_italicUsesEm = _preferences.get("italicUsesEm");
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
@@ -801,51 +819,73 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
+	* @private
+	*/
+	function onBeforeContextMenuOpen(e) {
+		var selection = EditorManager.getCurrentFullEditor().getSelection();
+		
+		if (selection.end.ch - selection.start.ch <= 2) {
+			EditorManager.getCurrentFullEditor().setCursorPos(selection.end.line, selection.end.ch);
+		}
+	}
+	//------------------------------------------------------------------------------------------------------------//
+	/**
 	* Adds all menu items to menu bar and enabled hotkeys
 	* @private
 	*/
 	function _addMenuItems() {
 		// Add HTML Format menu to menu bar
-		if (_htmlFormatMenu == null || _htmlFormatMenu == undefined) {
-		_htmlFormatMenu = Menus.addMenu(Strings.TITLE_MENU, HTML_FORMAT_MENU_COMMAND_ID, Menus.BEFORE, Menus.AppMenuBar.FIND_MENU);
-		
-		// Add all menu options
-		_htmlFormatMenu.addMenuItem(BOLD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(BOLD_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_STYLE)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(ITALIC_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(ITALIC_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_STYLE)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
-		
-		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
-		
-		_htmlFormatMenu.addMenuItem(STRIKE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(STRIKE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_STYLE)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(TELETYPE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(TELETYPE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
-		
-		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
-		
-		_htmlFormatMenu.addMenuItem(CODE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CODE_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(VARIABLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.VARIABLE_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(SAMPLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SAMPLE_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(KEYBOARD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.KEYBOARD_TAG)), Menus.LAST);
-		
-		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
-		
-		_htmlFormatMenu.addMenuItem(CITATION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CITATION_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(DEFINITION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DEFINITION_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(DELETED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DELETED_TAG)), Menus.LAST);
-		_htmlFormatMenu.addMenuItem(INSERTED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.INSERTED_TAG)), Menus.LAST);
-		
-		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
-		
-		_htmlFormatMenu.addMenuItem(INSERT_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.EMPTY_TAG)), Menus.LAST);
-		
-		_htmlFormatMenuDividers[_htmlFormatMenuDividers.length] = _htmlFormatMenu.addMenuDivider();
-		
-		_htmlFormatMenu.addMenuItem(PREFERENCE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PREFERENCES)), Menus.LAST);
+		if (_htmlFormatMenu === null || _htmlFormatMenu === undefined) {
+			_htmlFormatMenu = Menus.addMenu(Strings.TITLE_MENU, HTML_FORMAT_MENU_COMMAND_ID, Menus.BEFORE, Menus.AppMenuBar.FIND_MENU);
+			
+			// add some of the options to the right-click menu
+			if (_addRightClick === true) {
+				Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuItem(BOLD_COMMAND_ID);
+				Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuItem(ITALIC_COMMAND_ID);
+				Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuItem(UNDERLINE_COMMAND_ID);
+				Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).on("beforeContextMenuOpen", onBeforeContextMenuOpen);
+			}
+			
+			//console.log(Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU))
+			
+			// Add all menu options
+			_htmlFormatMenu.addMenuItem(BOLD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(BOLD_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_STYLE)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(ITALIC_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(ITALIC_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_STYLE)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
+
+			_htmlFormatMenu.addMenuDivider();
+
+			_htmlFormatMenu.addMenuItem(STRIKE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(STRIKE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_STYLE)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(TELETYPE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(TELETYPE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
+
+			_htmlFormatMenu.addMenuDivider();
+
+			_htmlFormatMenu.addMenuItem(CODE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CODE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(VARIABLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.VARIABLE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(SAMPLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SAMPLE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(KEYBOARD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.KEYBOARD_TAG)), Menus.LAST);
+
+			_htmlFormatMenu.addMenuDivider();
+
+			_htmlFormatMenu.addMenuItem(CITATION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CITATION_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(DEFINITION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DEFINITION_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(DELETED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DELETED_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(INSERTED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.INSERTED_TAG)), Menus.LAST);
+
+			_htmlFormatMenu.addMenuDivider();
+
+			_htmlFormatMenu.addMenuItem(INSERT_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.EMPTY_TAG)), Menus.LAST);
+
+			_htmlFormatMenu.addMenuDivider();
+
+			_htmlFormatMenu.addMenuItem(PREFERENCE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PREFERENCES)), Menus.LAST);
 		}
+		
 		// enable hotkeys
 		_commands.forEach(function(command) {
 			command.setEnabled(true);
@@ -878,6 +918,13 @@ define(function (require, exports, module) {
 		// Remove HTML Format menu from menu bar and set variable reference to null
 		Menus.removeMenu(HTML_FORMAT_MENU_COMMAND_ID);
 		_htmlFormatMenu = null;
+		
+		if (_addRightClick === true) {
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(BOLD_COMMAND_ID);
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(ITALIC_COMMAND_ID);
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(UNDERLINE_COMMAND_ID);
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).off("beforeContextMenuOpen");
+		}
 	}
 	
 	//------------------------------------------------------------------------------------------------------------//
@@ -913,7 +960,7 @@ define(function (require, exports, module) {
 			if (PreferenceStrings.hasOwnProperty(prop)) {
 				$("#" + PreferenceStrings[prop]).css("background-color", "");// target all elements and reset
 				
-				if (target !== PreferenceStrings[prop] && pref.toString() === _getPreferenceValues(PreferenceStrings[prop]).toString()) {
+				if (target !== PreferenceStrings[prop] && pref.toString() === _getPreferenceValues(PreferenceStrings[prop]).toString() && pref.toString() !== _defaultTagStyleShortcut.toString()) {
 					$("#" + PreferenceStrings[prop]).css("background-color", "#ff7777");
 					isInUse = true;
 				}
@@ -982,8 +1029,9 @@ define(function (require, exports, module) {
 	function _openPreferencesPanel() {
 		Dialogs.showModalDialogUsingTemplate(_preferenceHTML);
 		
-		$("#boldStrong input").prop("checked", _preferences.get("boldUsesStrong"));
-		$("#italicEm input").prop("checked", _preferences.get("italicUsesEm"));
+		$("#boldStrong input").prop("checked", _boldUsesStrong);
+		$("#italicEm input").prop("checked", _italicUsesEm);
+		$("#rightClick input").prop("checked", _addRightClick);
 		_updatePreferenceHTML(PreferenceStrings.BOLD_TAG, _preferences.get(PreferenceStrings.BOLD_TAG));
 		_updatePreferenceHTML(PreferenceStrings.BOLD_STYLE, _preferences.get(PreferenceStrings.BOLD_STYLE));
 		_updatePreferenceHTML(PreferenceStrings.ITALIC_TAG, _preferences.get(PreferenceStrings.ITALIC_TAG));
@@ -1028,10 +1076,12 @@ define(function (require, exports, module) {
 		});
 		
 		$("#btn_save").on("click", function (e) {
-			_preferences.set("boldUsesStrong", $("#boldStrong input").prop("checked"));
-			_preferences.set("italicUsesEm", $("#italicEm input").prop("checked"));
-			_boldUsesStrong = _preferences.get("boldUsesStrong");
-			_italicUsesEm = _preferences.get("italicUsesEm");
+			_preferences.set(AdditionalPrefStrings.BOLD_USES_STRONG, $("#boldStrong input").prop("checked"));
+			_preferences.set(AdditionalPrefStrings.ITALIC_USES_EM, $("#italicEm input").prop("checked"));
+			_preferences.set(AdditionalPrefStrings.ADD_RIGHT_CLICK, $("#rightClick input").prop("checked"));
+			_boldUsesStrong = _preferences.get(AdditionalPrefStrings.BOLD_USES_STRONG);
+			_italicUsesEm = _preferences.get(AdditionalPrefStrings.ITALIC_USES_EM);
+			_addRightClick = _preferences.get(AdditionalPrefStrings.ADD_RIGHT_CLICK);
 			
 			if (_duplicateShortcuts == false) {
 				_setPreferenceValues(PreferenceStrings.BOLD_TAG);
@@ -1071,7 +1121,7 @@ define(function (require, exports, module) {
 	* @private
 	*/
 	function _onCurrentFileChange(e, newFile, newPaneId, oldFile, oldPaneId) {
-		if (newFile !== null) {
+		if (newFile !== null && newFile !== undefined) {
 			var ext = FileUtils.getFileExtension(newFile.toString().toLowerCase());
 			var shouldAdd = (ext.indexOf("htm") !== -1 || ext.indexOf("php") !== -1 || ext.indexOf("asp") !== -1);
 			
