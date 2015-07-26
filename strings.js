@@ -37,6 +37,7 @@ define({
     "MODIFIER_ALT"						: "Alt",
     "BOLD_STRONG"						: "Use <strong> tag in place of <b>",
 	"ITALIC_EM"							: "Use <em> tag in place of <i>",
+	"ADD_RIGHT_CLICK"					: "Add bold, italic, and underline tag commands to the right-click menu. This will disable the default Brackets behavior of making a single character text selection where the cursor was located when the right-click action occured.",
     "LABEL_BOLD_TAG_SHORTCUT"			: "Bold - tag",
 	"LABEL_BOLD_STYLE_SHORTCUT"			: "Bold - style",
     "LABEL_ITALIC_TAG_SHORTCUT"			: "Italic - tag",
