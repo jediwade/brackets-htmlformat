@@ -33,3 +33,9 @@ this, the latest version of Brackets is required to ensure that it will work. Ad
 that if the cursor is within an inline style and a tag or style is inserted, it will be 
 automatically converted/added into the inline style attribute. If it was a tag that 
 doesn't have a style equivalent, it is ignored and nothing will be added.
+
+==================
+Update - July 26, 2015
+Bug fixes and added bold, italic, and underline tags to the right-click menu. This feature must 
+be enabled in the preferences and deselects the Brackets default selection of 1 to 2 characters 
+at the cursor location when the right-click action occured.
