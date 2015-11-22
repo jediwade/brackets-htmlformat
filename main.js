@@ -60,6 +60,16 @@ define(function (require, exports, module) {
 	var UNDERLINE_STYLE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.UNDERLINE_STYLE;
 	
 	//------------------------------------------------------------------------------------------------------------//
+	var SPAN_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.SPAN_TAG;
+	var DIV_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.DIV_TAG;
+	var HEADER_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.HEADER_TAG;
+	var NAV_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.NAV_TAG;
+	var ARTICLE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ARTICLE_TAG;
+	var SECTION_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.SECTION_TAG;
+	var ASIDE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ASIDE_TAG;
+	var FOOTER_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.FOOTER_TAG;
+	
+	//------------------------------------------------------------------------------------------------------------//
 	var STRIKE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.STRIKE_TAG;
 	var STRIKE_STYLE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.STRIKE_STYLE;
 	var TELETYPE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.TELETYPE_TAG;
@@ -109,6 +119,12 @@ define(function (require, exports, module) {
 	* @private
 	*/
 	var _platform = (navigator.appVersion.indexOf("Mac") !== -1) ? "mac" : "win";
+	
+	/**
+	* Used for detecting the file type to know if the file menu should appear and if hotkeys should work
+	* @private
+	*/
+	var _fileExtension = "";
 	
 	/**
 	* Menu bar containing all the format options.
@@ -194,7 +210,7 @@ define(function (require, exports, module) {
 	var _italicUsesEm = false;
 	
 	/**
-	* Determines whether or not the <em> tag is used in place of <i> when adding an italic tag
+	* 
 	* @type {boolean}
 	* @private
 	*/
@@ -216,12 +232,30 @@ define(function (require, exports, module) {
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	
 	ExtensionUtils.loadStyleSheet(module, "preferencePanel.css");
+	var _control = (_platform === "mac") ? "Cmd" : "Ctrl";
 	
+	// command, shift, alt, control, character
+	if (_preferences.get(PreferenceStrings.BOLD_TAG) === undefined) {
+		_preferences.set(PreferenceStrings.BOLD_TAG, [_control, null, null, null, "B"]);
+		_preferences.set(PreferenceStrings.BOLD_STYLE, [_control, "Shift", null, null, "B"]);
+		_preferences.set(PreferenceStrings.ITALIC_TAG, [_control, null, null, null, "I"]);
+		_preferences.set(PreferenceStrings.ITALIC_STYLE, [_control, "Shift", null, null, "I"]);
+		_preferences.set(PreferenceStrings.UNDERLINE_TAG, [_control, null, null, null, "U"]);
+		_preferences.set(PreferenceStrings.UNDERLINE_STYLE, [_control, "Shift", null, null, "U"]);
+		_preferences.set(PreferenceStrings.EMPTY_TAG, [_control, null, null, null, "T"]);
+		_preferences.set(PreferenceStrings.PREFERENCES, [_control, "Shift", null, null, ","]);
+	}
+	
+	// set any tag/style input to have the default shortcut if it is undefined
 	// generate list of keyboard shortcuts for HTML Format Preferences screen
 	var prefString = "";
 	var prefStringProp;
 	for (prefStringProp in PreferenceStrings) {
 		if (PreferenceStrings.hasOwnProperty(prefStringProp)) {
+			if (_preferences.get(PreferenceStrings[prefStringProp]) === undefined) {
+				_preferences.set(PreferenceStrings[prefStringProp], _defaultTagStyleShortcut);
+			}
+			
 			prefString +=	"<tr>";
 			prefString +=		"<td>";
 			prefString +=			"<div id='" + PreferenceStrings[prefStringProp] + "' class='shortcut'>";
@@ -248,7 +282,6 @@ define(function (require, exports, module) {
 	_preferencePanel = _preferencePanel.replace("<tr id=\"shortcuts\"></tr>", prefString);
 	
 	var _preferenceHTML = Mustache.render(_preferencePanel, Strings);
-	var _control = (_platform === "mac") ? "Cmd" : "Ctrl";
 	
 	if (_preferences.get(AdditionalPrefStrings.BOLD_USES_STRONG) === undefined) {
 		_preferences.set(AdditionalPrefStrings.BOLD_USES_STRONG, false);
@@ -270,35 +303,6 @@ define(function (require, exports, module) {
 		_addRightClick = _preferences.get(AdditionalPrefStrings.ADD_RIGHT_CLICK);
 	}
 	
-	// command, shift, alt, control, character
-	if (_preferences.get(PreferenceStrings.BOLD_TAG) === undefined) {
-		_preferences.set(PreferenceStrings.BOLD_TAG, [_control, null, null, null, "B"]);
-		_preferences.set(PreferenceStrings.BOLD_STYLE, [_control, "Shift", null, null, "B"]);
-		
-		_preferences.set(PreferenceStrings.ITALIC_TAG, [_control, null, null, null, "I"]);
-		_preferences.set(PreferenceStrings.ITALIC_STYLE, [_control, "Shift", null, null, "I"]);
-		
-		_preferences.set(PreferenceStrings.UNDERLINE_TAG, [_control, null, null, null, "U"]);
-		_preferences.set(PreferenceStrings.UNDERLINE_STYLE, [_control, "Shift", null, null, "U"]);
-		
-		_preferences.set(PreferenceStrings.STRIKE_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.STRIKE_STYLE, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.TELETYPE_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.TELETYPE_STYLE, _defaultTagStyleShortcut);
-		
-		_preferences.set(PreferenceStrings.CODE_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.VARIABLE_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.SAMPLE_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.KEYBOARD_TAG, _defaultTagStyleShortcut);
-		
-		_preferences.set(PreferenceStrings.CITATION_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.DEFINITION_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.DELETED_TAG, _defaultTagStyleShortcut);
-		_preferences.set(PreferenceStrings.INSERTED_TAG, _defaultTagStyleShortcut);
-		
-		_preferences.set(PreferenceStrings.EMPTY_TAG, [_control, null, null, null, "T"]);
-		_preferences.set(PreferenceStrings.PREFERENCES, [_control, "Shift", null, null, ","]);
-	}
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// FUNCTIONS
@@ -508,6 +512,64 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
+	* Call _addTag() with a span tag
+	* @private
+	*/
+	function _spanTag() {
+		_addTag("span");
+	}
+	/**
+	* Call _addTag() with a div tag
+	* @private
+	*/
+	function _divTag() {
+		_addTag("div");
+	}
+	/**
+	* Call _addTag() with a header tag
+	* @private
+	*/
+	function _headerTag() {
+		_addTag("header");
+	}
+	/**
+	* Call _addTag() with a nav tag
+	* @private
+	*/
+	function _navTag() {
+		_addTag("nav");
+	}
+	/**
+	* Call _addTag() with a article tag
+	* @private
+	*/
+	function _articleTag() {
+		_addTag("article");
+	}
+	/**
+	* Call _addTag() with a section tag
+	* @private
+	*/
+	function _sectionTag() {
+		_addTag("section");
+	}
+	/**
+	* Call _addTag() with a aside tag
+	* @private
+	*/
+	function _asideTag() {
+		_addTag("aside");
+	}
+	/**
+	* Call _addTag() with a footer tag
+	* @private
+	*/
+	function _footerTag() {
+		_addTag("footer");
+	}
+	
+	//------------------------------------------------------------------------------------------------------------//
+	/**
 	* Call _addTag() with an strikethrough tag
 	* @private
 	*/
@@ -658,7 +720,7 @@ define(function (require, exports, module) {
 			_emptyTagPos.open.end = {line:_currentPos.line, ch:_emptyTagPos.open.start.ch + 3 + _lng};
 			_emptyTagPos.close.start = {line:_currentPos.line, ch:_emptyTagPos.open.end.ch};
 			_emptyTagPos.close.end = {line:_currentPos.line, ch:_emptyTagPos.close.start.ch + 4 + _lng};
-			
+				
 			_lng += 1;
 		}
 		
@@ -718,6 +780,7 @@ define(function (require, exports, module) {
 		else if (event.keyCode !== 37 && event.keyCode !== 39) {
 			event.preventDefault();
 			event.stopPropagation();
+			event.stopImmediatePropagation();
 		}
 	}
 	
@@ -730,9 +793,8 @@ define(function (require, exports, module) {
 	function _onCursorChange(event) {
 		_currentPos = _editor.getCursorPos();
 		
-		if (_currentPos.line !== _emptyTagPos.open.start.line || 
-			( (_currentPos.ch < _emptyTagPos.open.start.ch || _currentPos.ch > _emptyTagPos.open.end.ch) && _currentPos.line === _emptyTagPos.open.start.line) ) {
-				_disposeAddTagListeners(_keyboardListener, null);
+		if (_currentPos.line !== _emptyTagPos.open.start.line || ((_currentPos.ch < _emptyTagPos.open.start.ch || _currentPos.ch > _emptyTagPos.open.end.ch) && _currentPos.line !== _emptyTagPos.open.start.line)) {
+				_disposeAddTagListeners(_keyboardListener);
 		}
 	}
 	
@@ -748,7 +810,24 @@ define(function (require, exports, module) {
 		var curPos = _editor.getCursorPos();
 		
 		// reset empty tag position variable
-		_emptyTagPos = {open:{start:{line:0, ch:0}, end:{line:0, ch:0}}, close:{start:{line:0, ch:0}, end:{line:0, ch:0}}};
+		_emptyTagPos = {
+			open:{
+				start:{
+					line:curPos.line, ch:curPos.ch - 2
+				}, 
+				end:{
+					line:curPos.line, ch:curPos.ch
+				}
+			}, 
+			close:{
+				start:{
+					line:curPos.line, ch:curPos.ch
+				}, 
+				end:{
+					line:curPos.line, ch:curPos.ch + 3 + _lng
+				}
+			}
+		};
 		
 		// set open tag positions.
 		_emptyTagPos.open.start = {line:curPos.line, ch:curPos.ch - 2};
@@ -757,10 +836,6 @@ define(function (require, exports, module) {
 		// If length is zero, the move the cursor back 1 space to be inside the empty open tag
 		if (_lng === 0) {
 			_editor.setCursorPos(curPos.line, curPos.ch - 1);
-			
-			// set open tag position. cursor is set to be to the right of the "/>"
-			_emptyTagPos.close.start = {line:curPos.line, ch:curPos.ch};
-			_emptyTagPos.close.end = {line:curPos.line, ch:curPos.ch + 3};
 		}
 		
 		// If length is not zero, then move the cursor back 4 spaces (to account for "></>") + the length of 
@@ -768,10 +843,6 @@ define(function (require, exports, module) {
 		// set when the _addTag() method is called
 		else {
 			_editor.setCursorPos(curPos.line, curPos.ch - (4 + _lng));
-			
-			// set close tag positions.
-			_emptyTagPos.close.start = {line:curPos.line, ch:curPos.ch};
-			_emptyTagPos.close.end = {line:curPos.line, ch:curPos.ch + 3 + _lng};
 		}
 		
 		_editor.on("cursorActivity", _onCursorChange);
@@ -846,9 +917,6 @@ define(function (require, exports, module) {
 				Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).on("beforeContextMenuOpen", onBeforeContextMenuOpen);
 			}
 			
-			//console.log(Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU))
-			
-			// Add all menu options
 			_htmlFormatMenu.addMenuItem(BOLD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(BOLD_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_STYLE)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(ITALIC_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_TAG)), Menus.LAST);
@@ -857,14 +925,25 @@ define(function (require, exports, module) {
 			_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
 
 			_htmlFormatMenu.addMenuDivider();
+			
+			_htmlFormatMenu.addMenuItem(SPAN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SPAN_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(DIV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DIV_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(HEADER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.HEADER_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(NAV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(ARTICLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ARTICLE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(SECTION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SECTION_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(ASIDE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ASIDE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(FOOTER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.FOOTER_TAG)), Menus.LAST);
 
+			_htmlFormatMenu.addMenuDivider();
+			
 			_htmlFormatMenu.addMenuItem(STRIKE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(STRIKE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_STYLE)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(TELETYPE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(TELETYPE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
 
 			_htmlFormatMenu.addMenuDivider();
-
+			
 			_htmlFormatMenu.addMenuItem(CODE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CODE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(VARIABLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.VARIABLE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(SAMPLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SAMPLE_TAG)), Menus.LAST);
@@ -882,7 +961,7 @@ define(function (require, exports, module) {
 			_htmlFormatMenu.addMenuItem(INSERT_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.EMPTY_TAG)), Menus.LAST);
 
 			_htmlFormatMenu.addMenuDivider();
-
+			
 			_htmlFormatMenu.addMenuItem(PREFERENCE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PREFERENCES)), Menus.LAST);
 		}
 		
@@ -902,6 +981,14 @@ define(function (require, exports, module) {
 		_commands.forEach(function(command) {
 			command.setEnabled(false);
 		});
+			
+		// remove right-click menu options
+		if (_addRightClick === true) {
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(BOLD_COMMAND_ID);
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(ITALIC_COMMAND_ID);
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(UNDERLINE_COMMAND_ID);
+			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).off("beforeContextMenuOpen");
+		}
 		
 		// remove any previously set key bindings generated by Menu.addMenuItem()
 		var str = "";
@@ -918,13 +1005,6 @@ define(function (require, exports, module) {
 		// Remove HTML Format menu from menu bar and set variable reference to null
 		Menus.removeMenu(HTML_FORMAT_MENU_COMMAND_ID);
 		_htmlFormatMenu = null;
-		
-		if (_addRightClick === true) {
-			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(BOLD_COMMAND_ID);
-			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(ITALIC_COMMAND_ID);
-			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(UNDERLINE_COMMAND_ID);
-			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).off("beforeContextMenuOpen");
-		}
 	}
 	
 	//------------------------------------------------------------------------------------------------------------//
@@ -1122,14 +1202,14 @@ define(function (require, exports, module) {
 	*/
 	function _onCurrentFileChange(e, newFile, newPaneId, oldFile, oldPaneId) {
 		if (newFile !== null && newFile !== undefined) {
-			var ext = FileUtils.getFileExtension(newFile.toString().toLowerCase());
-			var shouldAdd = (ext.indexOf("htm") !== -1 || ext.indexOf("php") !== -1 || ext.indexOf("asp") !== -1);
+			_fileExtension = FileUtils.getFileExtension(newFile.toString().toLowerCase());
+			var shouldAdd = (_fileExtension.indexOf("htm") !== -1 || _fileExtension.indexOf("php") !== -1 || _fileExtension.indexOf("asp") !== -1);
 			
+			if (_htmlFormatMenu !== null && _htmlFormatMenu !== undefined) {
+				_removeMenuItems();
+			}
 			if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && (shouldAdd === true)) {
 				_addMenuItems();
-			}
-			else if ((_htmlFormatMenu !== null && _htmlFormatMenu !== undefined) && (shouldAdd === false)) {
-				_removeMenuItems();
 			}
 		}
 	}
@@ -1146,6 +1226,16 @@ define(function (require, exports, module) {
 	_commands.push(CommandManager.register(Strings.LABEL_ITALIC_STYLE_SHORTCUT, ITALIC_STYLE_COMMAND_ID, _italicStyle));
 	_commands.push(CommandManager.register(Strings.LABEL_UNDERLINE_TAG_SHORTCUT, UNDERLINE_COMMAND_ID, _underlineTag));
 	_commands.push(CommandManager.register(Strings.LABEL_UNDERLINE_STYLE_SHORTCUT, UNDERLINE_STYLE_COMMAND_ID, _underlineStyle));
+	
+	//------------------------------------------------------------------------------------------------------------//
+	_commands.push(CommandManager.register(Strings.LABEL_SPAN_TAG_SHORTCUT, SPAN_COMMAND_ID, _spanTag));
+	_commands.push(CommandManager.register(Strings.LABEL_DIV_TAG_SHORTCUT, DIV_COMMAND_ID, _divTag));
+	_commands.push(CommandManager.register(Strings.LABEL_HEADER_TAG_SHORTCUT, HEADER_COMMAND_ID, _headerTag));
+	_commands.push(CommandManager.register(Strings.LABEL_NAV_TAG_SHORTCUT, NAV_COMMAND_ID, _navTag));
+	_commands.push(CommandManager.register(Strings.LABEL_ARTICLE_TAG_SHORTCUT, ARTICLE_COMMAND_ID, _articleTag));
+	_commands.push(CommandManager.register(Strings.LABEL_SECTION_TAG_SHORTCUT, SECTION_COMMAND_ID, _sectionTag));
+	_commands.push(CommandManager.register(Strings.LABEL_ASIDE_TAG_SHORTCUT, ASIDE_COMMAND_ID, _asideTag));
+	_commands.push(CommandManager.register(Strings.LABEL_FOOTER_TAG_SHORTCUT, FOOTER_COMMAND_ID, _footerTag));
 	
 	//------------------------------------------------------------------------------------------------------------//
 	_commands.push(CommandManager.register(Strings.LABEL_STRIKE_TAG_SHORTCUT, STRIKE_COMMAND_ID, _strikeTag));
