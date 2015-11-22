@@ -39,3 +39,7 @@ Update - July 26, 2015
 Bug fixes and added bold, italic, and underline tags to the right-click menu. This feature must 
 be enabled in the preferences and deselects the Brackets default selection of 1 to 2 characters 
 at the cursor location when the right-click action occured.
+
+==================
+Update - November 22, 2015
+Bug fixes and more tags added to the format menu
