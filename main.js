@@ -28,6 +28,7 @@ define(function (require, exports, module) {
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// BRACKETS OBJECTS
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
+    var Commands = brackets.getModule("command/Commands");
 	var CommandManager = brackets.getModule("command/CommandManager");
 	var Menus = brackets.getModule("command/Menus");
 	var DocumentManager = brackets.getModule("document/DocumentManager");
@@ -1184,7 +1185,12 @@ define(function (require, exports, module) {
 				_setPreferenceValues(PreferenceStrings.INSERTED_TAG);
 				_setPreferenceValues(PreferenceStrings.EMPTY_TAG);
 				_setPreferenceValues(PreferenceStrings.PREFERENCES);
+                
+                // save preferences
 				PreferencesManager.save();
+                
+                // tell brackets to reload with extensions so preference changes take place
+                CommandManager.execute(Commands.APP_RELOAD);
 			}
 			else {
 				alert("Duplicate keyboard shortcuts left unresolved.\nSave did not happen.");

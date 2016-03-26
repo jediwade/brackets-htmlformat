@@ -43,3 +43,7 @@ at the cursor location when the right-click action occured.
 ==================
 Update - November 22, 2015
 Bug fixes and more tags added to the format menu
+
+==================
+Update - March 26, 2016
+Preferences will trigger a Brackets reload with extensions when saving changes.

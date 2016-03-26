@@ -29,7 +29,7 @@ define({
     "TITLE_SHIFT"						: "Use the Shift key for the keyboard shortcut modifier(s).",
     "TITLE_ALT"							: "Use the Alt key for the keyboard shortcut modifier(s).",
 	"SHORTCUTS_WARNING_1"				: "WARNING: Keyboard shortcuts chosen can override those built into Brackets.",
-	"SHORTCUTS_WARNING_2"				: "Brackets should be reloaded with extensions after saving any keyboard shortcut change.",
+	"SHORTCUTS_WARNING_2"				: "Brackets will automatically be reloaded with extensions after saving any preference changes.",
     "MODIFIER_CONTROL_CMD"				: "Control",
 	"MODIFIER_CONTROL"					: "Control",
 	"MODIFIER_CMD"						: "Command",
