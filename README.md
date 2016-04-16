@@ -47,3 +47,8 @@ Bug fixes and more tags added to the format menu
 ==================
 Update - March 26, 2016
 Preferences will trigger a Brackets reload with extensions when saving changes.
+
+==================
+Update - April 15, 2016
+Add anchor tag to list of elements. Fix bug that only older HTML tag/style items from drop down menu
+could have keyboard shortcuts saved.

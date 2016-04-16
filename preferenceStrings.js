@@ -27,6 +27,7 @@ define({
 	"ITALIC_STYLE"		: "italicStyle",
 	"UNDERLINE_TAG"		: "underlineTag",
 	"UNDERLINE_STYLE"	: "underlineStyle",
+	"ANCHOR_TAG"		: "anchorTag",
 	"SPAN_TAG"			: "spanTag",
 	"DIV_TAG"			: "divTag",
 	"HEADER_TAG"		: "headerTag",

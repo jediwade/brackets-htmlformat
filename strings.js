@@ -44,6 +44,7 @@ define({
 	"LABEL_ITALIC_STYLE_SHORTCUT"		: "Italic - style",
     "LABEL_UNDERLINE_TAG_SHORTCUT"		: "Underline - tag",
 	"LABEL_UNDERLINE_STYLE_SHORTCUT"	: "Underline - style",
+    "LABEL_ANCHOR_TAG_SHORTCUT"			: "Anchor",
     "LABEL_SPAN_TAG_SHORTCUT"			: "Span",
     "LABEL_DIV_TAG_SHORTCUT"			: "Div",
 	"LABEL_HEADER_TAG_SHORTCUT"			: "Header",

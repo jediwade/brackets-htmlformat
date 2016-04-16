@@ -61,6 +61,9 @@ define(function (require, exports, module) {
 	var UNDERLINE_STYLE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.UNDERLINE_STYLE;
 	
 	//------------------------------------------------------------------------------------------------------------//
+	var ANCHOR_TAG_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ANCHOR_TAG;
+	
+	//------------------------------------------------------------------------------------------------------------//
 	var SPAN_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.SPAN_TAG;
 	var DIV_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.DIV_TAG;
 	var HEADER_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.HEADER_TAG;
@@ -513,6 +516,15 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
+	* Call _addTag() with an anchor tag
+	* @private
+	*/
+	function _anchorTag() {
+		_addTag("a");
+	}
+	
+	//------------------------------------------------------------------------------------------------------------//
+	/**
 	* Call _addTag() with a span tag
 	* @private
 	*/
@@ -900,6 +912,7 @@ define(function (require, exports, module) {
 			EditorManager.getCurrentFullEditor().setCursorPos(selection.end.line, selection.end.ch);
 		}
 	}
+	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Adds all menu items to menu bar and enabled hotkeys
@@ -924,6 +937,10 @@ define(function (require, exports, module) {
 			_htmlFormatMenu.addMenuItem(ITALIC_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_STYLE)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
+
+			_htmlFormatMenu.addMenuDivider();
+			
+			_htmlFormatMenu.addMenuItem(ANCHOR_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ANCHOR_TAG)), Menus.LAST);
 
 			_htmlFormatMenu.addMenuDivider();
 			
@@ -1165,32 +1182,18 @@ define(function (require, exports, module) {
 			_addRightClick = _preferences.get(AdditionalPrefStrings.ADD_RIGHT_CLICK);
 			
 			if (_duplicateShortcuts == false) {
-				_setPreferenceValues(PreferenceStrings.BOLD_TAG);
-				_setPreferenceValues(PreferenceStrings.BOLD_STYLE);
-				_setPreferenceValues(PreferenceStrings.ITALIC_TAG);
-				_setPreferenceValues(PreferenceStrings.ITALIC_STYLE);
-				_setPreferenceValues(PreferenceStrings.UNDERLINE_TAG);
-				_setPreferenceValues(PreferenceStrings.UNDERLINE_STYLE);
-				_setPreferenceValues(PreferenceStrings.STRIKE_TAG);
-				_setPreferenceValues(PreferenceStrings.STRIKE_STYLE);
-				_setPreferenceValues(PreferenceStrings.TELETYPE_TAG);
-				_setPreferenceValues(PreferenceStrings.TELETYPE_STYLE);
-				_setPreferenceValues(PreferenceStrings.CODE_TAG);
-				_setPreferenceValues(PreferenceStrings.VARIABLE_TAG);
-				_setPreferenceValues(PreferenceStrings.SAMPLE_TAG);
-				_setPreferenceValues(PreferenceStrings.KEYBOARD_TAG);
-				_setPreferenceValues(PreferenceStrings.CITATION_TAG);
-				_setPreferenceValues(PreferenceStrings.DEFINITION_TAG);
-				_setPreferenceValues(PreferenceStrings.DELETED_TAG);
-				_setPreferenceValues(PreferenceStrings.INSERTED_TAG);
-				_setPreferenceValues(PreferenceStrings.EMPTY_TAG);
-				_setPreferenceValues(PreferenceStrings.PREFERENCES);
+				var prefStringProp;
+				for (prefStringProp in PreferenceStrings) {
+					if (PreferenceStrings.hasOwnProperty(prefStringProp)) {
+						_setPreferenceValues(PreferenceStrings[prefStringProp]);
+					}
+				}
                 
                 // save preferences
 				PreferencesManager.save();
                 
                 // tell brackets to reload with extensions so preference changes take place
-                CommandManager.execute(Commands.APP_RELOAD);
+				CommandManager.execute(Commands.APP_RELOAD);
 			}
 			else {
 				alert("Duplicate keyboard shortcuts left unresolved.\nSave did not happen.");
@@ -1214,7 +1217,7 @@ define(function (require, exports, module) {
 			if (_htmlFormatMenu !== null && _htmlFormatMenu !== undefined) {
 				_removeMenuItems();
 			}
-			if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && (shouldAdd === true)) {
+			if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && shouldAdd === true) {
 				_addMenuItems();
 			}
 		}
@@ -1232,6 +1235,9 @@ define(function (require, exports, module) {
 	_commands.push(CommandManager.register(Strings.LABEL_ITALIC_STYLE_SHORTCUT, ITALIC_STYLE_COMMAND_ID, _italicStyle));
 	_commands.push(CommandManager.register(Strings.LABEL_UNDERLINE_TAG_SHORTCUT, UNDERLINE_COMMAND_ID, _underlineTag));
 	_commands.push(CommandManager.register(Strings.LABEL_UNDERLINE_STYLE_SHORTCUT, UNDERLINE_STYLE_COMMAND_ID, _underlineStyle));
+	
+	//------------------------------------------------------------------------------------------------------------//
+	_commands.push(CommandManager.register(Strings.LABEL_ANCHOR_TAG_SHORTCUT, ANCHOR_TAG_COMMAND_ID, _anchorTag));
 	
 	//------------------------------------------------------------------------------------------------------------//
 	_commands.push(CommandManager.register(Strings.LABEL_SPAN_TAG_SHORTCUT, SPAN_COMMAND_ID, _spanTag));
