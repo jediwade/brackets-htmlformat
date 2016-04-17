@@ -28,17 +28,43 @@ define(function (require, exports, module) {
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// BRACKETS OBJECTS
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
+	// Referencing for reloading Brackets after saving preference changes. 
+	// Reloading Brackets is required for hotkey changes to register.
     var Commands = brackets.getModule("command/Commands");
+	
+	// Used for registering all the menubar actions that can be executed.
 	var CommandManager = brackets.getModule("command/CommandManager");
+	
+	// Used for adding and removing menu options to the File/Edit/Find menubar.
 	var Menus = brackets.getModule("command/Menus");
+	
+	// Used for inserting tags at cursor position or inserting tags around highlighted copy.
 	var DocumentManager = brackets.getModule("document/DocumentManager");
+	
+	// Used for updating cursor position after tag has been inserted.
+	// Used for keeping highlight around copy after tag has been added around already highlighted text/
 	var EditorManager = brackets.getModule("editor/EditorManager");
+	
+	// Used for detecting key presses when adding a blank tag to type into.
 	var KeyBindingManager = brackets.getModule("command/KeyBindingManager");
+	
+	// Used for knowing when the file being viewed has changed.
 	var MainViewManager = brackets.getModule("view/MainViewManager");
+	
+	// Used for getting the file extension of the file currently being viewed to know if the menu bar 
+	// should appear and if hotkeys should work.
 	var FileUtils = brackets.getModule("file/FileUtils");
+	
+	// Used for saving and retrieving hotkey preferences and more.
 	var PreferencesManager = brackets.getModule("preferences/PreferencesManager");
+	
+	// Used for generating and showing the preference screen.
 	var Dialogs = brackets.getModule("widgets/Dialogs");
+	
+	// Used for styling the preference screen.
 	var ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
+	
+	// Strings all used for handling the generation of menu bar options, hotkeys, right-click menu, etc.
 	var Strings = require("strings");
 	var PreferenceStrings = require("preferenceStrings");
 	var AdditionalPrefStrings = require("additionalPrefStrings");
@@ -315,6 +341,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Generates the style needed based on the parameter
+	* @param {!string} style - The style to be checked for
 	* @private
 	*/
 	function _getStyle(style) {
@@ -461,7 +488,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Generates an HTML <span> tag with a text style based on the param received.
-	* @param {string} style The type of style that should be applied to the <span> tag being generated
+	* @param {!string} style - The type of style that should be applied to the <span> tag being generated
 	* @private
 	*/
 	function _addSpanStyle(style) {
@@ -489,211 +516,6 @@ define(function (require, exports, module) {
 		_currentDoc = null;
 		_editor = null;
 		_selection = null;
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addTag() with a bold tag
-	* @private
-	*/
-	function _boldTag() {
-		_addTag((_boldUsesStrong === true) ? "strong" : "b");
-	}
-	/**
-	* Call _addTag() with an italic tag
-	* @private
-	*/
-	function _italicTag() {
-		_addTag((_italicUsesEm === true) ? "em" : "i");
-	}
-	/**
-	* Call _addTag() with an underline tag
-	* @private
-	*/
-	function _underlineTag() {
-		_addTag("u");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addTag() with an anchor tag
-	* @private
-	*/
-	function _anchorTag() {
-		_addTag("a");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addTag() with a span tag
-	* @private
-	*/
-	function _spanTag() {
-		_addTag("span");
-	}
-	/**
-	* Call _addTag() with a div tag
-	* @private
-	*/
-	function _divTag() {
-		_addTag("div");
-	}
-	/**
-	* Call _addTag() with a header tag
-	* @private
-	*/
-	function _headerTag() {
-		_addTag("header");
-	}
-	/**
-	* Call _addTag() with a nav tag
-	* @private
-	*/
-	function _navTag() {
-		_addTag("nav");
-	}
-	/**
-	* Call _addTag() with a article tag
-	* @private
-	*/
-	function _articleTag() {
-		_addTag("article");
-	}
-	/**
-	* Call _addTag() with a section tag
-	* @private
-	*/
-	function _sectionTag() {
-		_addTag("section");
-	}
-	/**
-	* Call _addTag() with a aside tag
-	* @private
-	*/
-	function _asideTag() {
-		_addTag("aside");
-	}
-	/**
-	* Call _addTag() with a footer tag
-	* @private
-	*/
-	function _footerTag() {
-		_addTag("footer");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addTag() with an strikethrough tag
-	* @private
-	*/
-	function _strikeTag() {
-		_addTag("s");
-	}
-	/**
-	* Call _addTag() with an teletype tag
-	* @private
-	*/
-	function _teletypeTag() {
-		_addTag("tt");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addTag() with a code tag
-	* @private
-	*/
-	function _codeTag() {
-		_addTag("code");
-	}
-	/**
-	* Call _addTag() with a variable tag
-	* @private
-	*/
-	function _variableTag() {
-		_addTag("var");
-	}
-	/**
-	* Call _addTag() with an sample tag
-	* @private
-	*/
-	function _sampleTag() {
-		_addTag("samp");
-	}
-	/**
-	* Call _addTag() with a keyboard tag
-	* @private
-	*/
-	function _keyboardTag() {
-		_addTag("kbd");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addTag() with a citation tag
-	* @private
-	*/
-	function _citationTag() {
-		_addTag("cite");
-	}
-	/**
-	* Call _addTag() with a definition tag
-	* @private
-	*/
-	function _definitionTag() {
-		_addTag("dfn");
-	}
-	/**
-	* Call _addTag() with a deleted tag
-	* @private
-	*/
-	function _deletedTag() {
-		_addTag("del");
-	}
-	/**
-	* Call _addTag() with an inserted tag
-	* @private
-	*/
-	function _insertedTag() {
-		_addTag("ins");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addSpanStyle() with a bold style
-	* @private
-	*/
-	function _boldStyle() {
-		_addSpanStyle("bold");
-	}
-	/**
-	* Call _addSpanStyle() with an italic style
-	* @private
-	*/
-	function _italicStyle() {
-		_addSpanStyle("italic");
-	}
-	/**
-	* Call _addSpanStyle() with an underline style
-	* @private
-	*/
-	function _underlineStyle() {
-		_addSpanStyle("underline");
-	}
-	
-	//------------------------------------------------------------------------------------------------------------//
-	/**
-	* Call _addSpanStyle() with an strikethrough style
-	* @private
-	*/
-	function _strikeStyle() {
-		_addSpanStyle("strikethrough");
-	}
-	/**
-	* Call _addSpanStyle() with an monospace style
-	* @private
-	*/
-	function _teletypeStyle() {
-		_addSpanStyle("monospace");
 	}
 	
 	//------------------------------------------------------------------------------------------------------------//
@@ -1058,7 +880,8 @@ define(function (require, exports, module) {
 			if (PreferenceStrings.hasOwnProperty(prop)) {
 				$("#" + PreferenceStrings[prop]).css("background-color", "");// target all elements and reset
 				
-				if (target !== PreferenceStrings[prop] && pref.toString() === _getPreferenceValues(PreferenceStrings[prop]).toString() && pref.toString() !== _defaultTagStyleShortcut.toString()) {
+				if (target !== PreferenceStrings[prop] && pref.toString() === _getPreferenceValues(PreferenceStrings[prop]).toString() && 
+					pref.toString() !== _defaultTagStyleShortcut.toString()) {
 					$("#" + PreferenceStrings[prop]).css("background-color", "#ff7777");
 					isInUse = true;
 				}
@@ -1130,26 +953,13 @@ define(function (require, exports, module) {
 		$("#boldStrong input").prop("checked", _boldUsesStrong);
 		$("#italicEm input").prop("checked", _italicUsesEm);
 		$("#rightClick input").prop("checked", _addRightClick);
-		_updatePreferenceHTML(PreferenceStrings.BOLD_TAG, _preferences.get(PreferenceStrings.BOLD_TAG));
-		_updatePreferenceHTML(PreferenceStrings.BOLD_STYLE, _preferences.get(PreferenceStrings.BOLD_STYLE));
-		_updatePreferenceHTML(PreferenceStrings.ITALIC_TAG, _preferences.get(PreferenceStrings.ITALIC_TAG));
-		_updatePreferenceHTML(PreferenceStrings.ITALIC_STYLE, _preferences.get(PreferenceStrings.ITALIC_STYLE));
-		_updatePreferenceHTML(PreferenceStrings.UNDERLINE_TAG, _preferences.get(PreferenceStrings.UNDERLINE_TAG));
-		_updatePreferenceHTML(PreferenceStrings.UNDERLINE_STYLE, _preferences.get(PreferenceStrings.UNDERLINE_STYLE));
-		_updatePreferenceHTML(PreferenceStrings.STRIKE_TAG, _preferences.get(PreferenceStrings.STRIKE_TAG));
-		_updatePreferenceHTML(PreferenceStrings.STRIKE_STYLE, _preferences.get(PreferenceStrings.STRIKE_STYLE));
-		_updatePreferenceHTML(PreferenceStrings.TELETYPE_TAG, _preferences.get(PreferenceStrings.TELETYPE_TAG));
-		_updatePreferenceHTML(PreferenceStrings.TELETYPE_STYLE, _preferences.get(PreferenceStrings.TELETYPE_STYLE));
-		_updatePreferenceHTML(PreferenceStrings.CODE_TAG, _preferences.get(PreferenceStrings.CODE_TAG));
-		_updatePreferenceHTML(PreferenceStrings.VARIABLE_TAG, _preferences.get(PreferenceStrings.VARIABLE_TAG));
-		_updatePreferenceHTML(PreferenceStrings.SAMPLE_TAG, _preferences.get(PreferenceStrings.SAMPLE_TAG));
-		_updatePreferenceHTML(PreferenceStrings.KEYBOARD_TAG, _preferences.get(PreferenceStrings.KEYBOARD_TAG));
-		_updatePreferenceHTML(PreferenceStrings.CITATION_TAG, _preferences.get(PreferenceStrings.CITATION_TAG));
-		_updatePreferenceHTML(PreferenceStrings.DEFINITION_TAG, _preferences.get(PreferenceStrings.DEFINITION_TAG));
-		_updatePreferenceHTML(PreferenceStrings.DELETED_TAG, _preferences.get(PreferenceStrings.DELETED_TAG));
-		_updatePreferenceHTML(PreferenceStrings.INSERTED_TAG, _preferences.get(PreferenceStrings.INSERTED_TAG));
-		_updatePreferenceHTML(PreferenceStrings.EMPTY_TAG, _preferences.get(PreferenceStrings.EMPTY_TAG));
-		_updatePreferenceHTML(PreferenceStrings.PREFERENCES, _preferences.get(PreferenceStrings.PREFERENCES));
+		
+		var prefStringProp;
+		for (prefStringProp in PreferenceStrings) {
+			if (PreferenceStrings.hasOwnProperty(prefStringProp)) {
+				_updatePreferenceHTML(PreferenceStrings[prefStringProp], _preferences.get(PreferenceStrings[prefStringProp]));
+			}
+		}
 		
 		// listen for keypresses and checkboxes on any of the form elements within the preference panel
 		$("#preferenceForm").on("change", function (e) {
@@ -1166,7 +976,8 @@ define(function (require, exports, module) {
 					_checkCurrentPrefernces(e.target.parentElement.parentElement.getAttribute("id"));
 				}
 
-				// else if the character is not a number, grave accent, back/forward slash, bracket, brace, comma, period, minus, semicolon, single-quote, or equals, prevent it from being used
+				// else if the character is not a number, grave accent, back/forward slash, bracket, brace, comma, 
+				// period, minus, semicolon, single-quote, or equals, prevent it from being used
 				else if (e.keyCode < 65 || e.keyCode > 122) {
 					e.preventDefault();
 				}
@@ -1229,49 +1040,223 @@ define(function (require, exports, module) {
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_BOLD_TAG_SHORTCUT, BOLD_COMMAND_ID, _boldTag));
-	_commands.push(CommandManager.register(Strings.LABEL_BOLD_STYLE_SHORTCUT, BOLD_STYLE_COMMAND_ID, _boldStyle));
-	_commands.push(CommandManager.register(Strings.LABEL_ITALIC_TAG_SHORTCUT, ITALIC_COMMAND_ID, _italicTag));
-	_commands.push(CommandManager.register(Strings.LABEL_ITALIC_STYLE_SHORTCUT, ITALIC_STYLE_COMMAND_ID, _italicStyle));
-	_commands.push(CommandManager.register(Strings.LABEL_UNDERLINE_TAG_SHORTCUT, UNDERLINE_COMMAND_ID, _underlineTag));
-	_commands.push(CommandManager.register(Strings.LABEL_UNDERLINE_STYLE_SHORTCUT, UNDERLINE_STYLE_COMMAND_ID, _underlineStyle));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_BOLD_TAG_SHORTCUT, 
+			BOLD_COMMAND_ID, 
+			function() {_addTag((_boldUsesStrong === true) ? "strong" : "b");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_BOLD_STYLE_SHORTCUT, 
+			BOLD_STYLE_COMMAND_ID, 
+			function() {_addSpanStyle("bold");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_ITALIC_TAG_SHORTCUT, 
+			ITALIC_COMMAND_ID, 
+			function() {_addTag((_italicUsesEm === true) ? "em" : "i");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_ITALIC_STYLE_SHORTCUT, 
+			ITALIC_STYLE_COMMAND_ID, 
+			function() {_addSpanStyle("italic");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_UNDERLINE_TAG_SHORTCUT, 
+			UNDERLINE_COMMAND_ID, 
+			function() {_addTag("u");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_UNDERLINE_STYLE_SHORTCUT, 
+			UNDERLINE_STYLE_COMMAND_ID, 
+			function() {_addSpanStyle("underline");}
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_ANCHOR_TAG_SHORTCUT, ANCHOR_TAG_COMMAND_ID, _anchorTag));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_ANCHOR_TAG_SHORTCUT, 
+			ANCHOR_TAG_COMMAND_ID, 
+			function() {_addTag("a");}
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_SPAN_TAG_SHORTCUT, SPAN_COMMAND_ID, _spanTag));
-	_commands.push(CommandManager.register(Strings.LABEL_DIV_TAG_SHORTCUT, DIV_COMMAND_ID, _divTag));
-	_commands.push(CommandManager.register(Strings.LABEL_HEADER_TAG_SHORTCUT, HEADER_COMMAND_ID, _headerTag));
-	_commands.push(CommandManager.register(Strings.LABEL_NAV_TAG_SHORTCUT, NAV_COMMAND_ID, _navTag));
-	_commands.push(CommandManager.register(Strings.LABEL_ARTICLE_TAG_SHORTCUT, ARTICLE_COMMAND_ID, _articleTag));
-	_commands.push(CommandManager.register(Strings.LABEL_SECTION_TAG_SHORTCUT, SECTION_COMMAND_ID, _sectionTag));
-	_commands.push(CommandManager.register(Strings.LABEL_ASIDE_TAG_SHORTCUT, ASIDE_COMMAND_ID, _asideTag));
-	_commands.push(CommandManager.register(Strings.LABEL_FOOTER_TAG_SHORTCUT, FOOTER_COMMAND_ID, _footerTag));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_SPAN_TAG_SHORTCUT, 
+			SPAN_COMMAND_ID, 
+			function() {_addTag("span");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_DIV_TAG_SHORTCUT, 
+			DIV_COMMAND_ID, 
+			function() {_addTag("div");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_HEADER_TAG_SHORTCUT, 
+			HEADER_COMMAND_ID, 
+			function() {_addTag("header");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_NAV_TAG_SHORTCUT, 
+			NAV_COMMAND_ID, 
+			function() {_addTag("nav");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_ARTICLE_TAG_SHORTCUT, 
+			ARTICLE_COMMAND_ID, 
+			function() {_addTag("article");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_SECTION_TAG_SHORTCUT, 
+			SECTION_COMMAND_ID, 
+			function() {_addTag("section");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_ASIDE_TAG_SHORTCUT, 
+			ASIDE_COMMAND_ID, 
+			function() {_addTag("aside");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_FOOTER_TAG_SHORTCUT, 
+			FOOTER_COMMAND_ID, 
+			function() {_addTag("footer");}
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_STRIKE_TAG_SHORTCUT, STRIKE_COMMAND_ID, _strikeTag));
-	_commands.push(CommandManager.register(Strings.LABEL_STRIKE_STYLE_SHORTCUT, STRIKE_STYLE_COMMAND_ID, _strikeStyle));
-	_commands.push(CommandManager.register(Strings.LABEL_TELETYPE_TAG_SHORTCUT, TELETYPE_COMMAND_ID, _teletypeTag));
-	_commands.push(CommandManager.register(Strings.LABEL_TELETYPE_STYLE_SHORTCUT, TELETYPE_STYLE_COMMAND_ID, _teletypeStyle));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_STRIKE_TAG_SHORTCUT, 
+			STRIKE_COMMAND_ID, 
+			function() {_addTag("s");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_STRIKE_STYLE_SHORTCUT, 
+			STRIKE_STYLE_COMMAND_ID, 
+			function() {_addSpanStyle("strikethrough");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_TELETYPE_TAG_SHORTCUT, 
+			TELETYPE_COMMAND_ID, 
+			function() {_addTag("tt");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_TELETYPE_STYLE_SHORTCUT, 
+			TELETYPE_STYLE_COMMAND_ID, 
+			function() {_addSpanStyle("monospace");}
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_CODE_TAG_SHORTCUT, CODE_COMMAND_ID, _codeTag));
-	_commands.push(CommandManager.register(Strings.LABEL_VARIABLE_TAG_SHORTCUT, VARIABLE_COMMAND_ID, _variableTag));
-	_commands.push(CommandManager.register(Strings.LABEL_SAMPLE_TAG_SHORTCUT, SAMPLE_COMMAND_ID, _sampleTag));
-	_commands.push(CommandManager.register(Strings.LABEL_KEYBOARD_TAG_SHORTCUT, KEYBOARD_COMMAND_ID, _keyboardTag));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_CODE_TAG_SHORTCUT, 
+			CODE_COMMAND_ID, 
+			function() {_addTag("code");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_VARIABLE_TAG_SHORTCUT, 
+			VARIABLE_COMMAND_ID, 
+			function() {_addTag("var");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_SAMPLE_TAG_SHORTCUT, 
+			SAMPLE_COMMAND_ID, 
+			function() {_addTag("samp");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_KEYBOARD_TAG_SHORTCUT, 
+			KEYBOARD_COMMAND_ID, 
+			function() {_addTag("kbd");}
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_CITATION_TAG_SHORTCUT, CITATION_COMMAND_ID, _citationTag));
-	_commands.push(CommandManager.register(Strings.LABEL_DEFINITION_TAG_SHORTCUT, DEFINITION_COMMAND_ID, _definitionTag));
-	_commands.push(CommandManager.register(Strings.LABEL_DELETED_TAG_SHORTCUT, DELETED_COMMAND_ID, _deletedTag));
-	_commands.push(CommandManager.register(Strings.LABEL_INSERTED_TAG_SHORTCUT, INSERTED_COMMAND_ID, _insertedTag));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_CITATION_TAG_SHORTCUT, 
+			CITATION_COMMAND_ID, 
+			function() {_addTag("cite");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_DEFINITION_TAG_SHORTCUT, 
+			DEFINITION_COMMAND_ID, 
+			function() {_addTag("dfn");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_DELETED_TAG_SHORTCUT, 
+			DELETED_COMMAND_ID, 
+			function() {_addTag("del");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_INSERTED_TAG_SHORTCUT, 
+			INSERTED_COMMAND_ID, 
+			function() {_addTag("ins");}
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_EMPTY_TAG_SHORTCUT, INSERT_TAG_COMMAND_ID, _insertEmptyTag));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_EMPTY_TAG_SHORTCUT, 
+			INSERT_TAG_COMMAND_ID, 
+			_insertEmptyTag
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
-	_commands.push(CommandManager.register(Strings.LABEL_PREFERENCES_SHORTCUT, PREFERENCE_COMMAND_ID, _openPreferencesPanel));
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_PREFERENCES_SHORTCUT, 
+			PREFERENCE_COMMAND_ID, 
+			_openPreferencesPanel
+		)
+	);
 	
 	//------------------------------------------------------------------------------------------------------------//
 	MainViewManager.on("currentFileChange", _onCurrentFileChange);

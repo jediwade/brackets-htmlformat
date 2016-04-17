@@ -52,3 +52,10 @@ Preferences will trigger a Brackets reload with extensions when saving changes.
 Update - April 15, 2016
 Add anchor tag to list of elements. Fix bug that only older HTML tag/style items from drop down menu
 could have keyboard shortcuts saved.
+
+==================
+Update - April 17, 2016
+More bug fixes related to preferences and going against my disdain for anonymous functions, I have 
+changed the CommandManager.register() method to take an anonymous function calling _addTag() and 
+_addSpanStyle(), passing the appropriate argument to make it function the same as before, but 
+without dozens of functions doing the same thing.
