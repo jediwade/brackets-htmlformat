@@ -88,6 +88,13 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	var ANCHOR_TAG_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ANCHOR_TAG;
+	var PARAGRAPH_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.PARAGRAPH_TAG;
+	var H1_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.H1_TAG;
+	var H2_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.H2_TAG;
+	var H3_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.H3_TAG;
+	var H4_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.H4_TAG;
+	var H5_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.H5_TAG;
+	var H6_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.H6_TAG;
 	
 	//------------------------------------------------------------------------------------------------------------//
 	var SPAN_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.SPAN_TAG;
@@ -319,6 +326,7 @@ define(function (require, exports, module) {
 	else {
 		_boldUsesStrong = _preferences.get(AdditionalPrefStrings.BOLD_USES_STRONG);
 	}
+	
 	if (_preferences.get(AdditionalPrefStrings.ITALIC_USES_EM) === undefined) {
 		_preferences.set(AdditionalPrefStrings.ITALIC_USES_EM, false);
 	}
@@ -393,7 +401,7 @@ define(function (require, exports, module) {
 		while (styles.length !== 0) {
 			if (cursorPos >= styles[styles.length-1].start && cursorPos <= styles[styles.length-1].end) {
 				if (style.length !== 0) {
-					var index = (cursorPos == styles[styles.length-1].start) ? styles[styles.length-1].start - 1 : -1;
+					var index = (cursorPos === styles[styles.length-1].start) ? styles[styles.length-1].start - 1 : -1;
 
 					// if not -1, meaning cursor was at beginning of the style, add a space to the string after the ";"
 					if (index !== -1) {
@@ -404,7 +412,7 @@ define(function (require, exports, module) {
 					else {
 						var styleMod = "";
 						// set index to the last character of the styles
-						index = (cursorPos == styles[styles.length-1].end) ? styles[styles.length-1].end - 1 : -1;
+						index = (cursorPos === styles[styles.length-1].end) ? styles[styles.length-1].end - 1 : -1;
 
 						// if index is -1, cursor was not at end of styles string. search for the closest ";" appearing before the cursor
 						if (index === -1) {
@@ -450,8 +458,21 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
+	* Checks to see if the provided tag is on the list of tags that should not surround a tag of the same type.
+	* @param {!string} tag - The tag to check to see if it should not be doubled
+	* @private
+	*/
+	function _shouldTagNotDouble(tag) {
+		var tags = ["b", "strong", "i", "em", "u", "a", "p", "h1", "h2", "h3", "h4", "h5", "h6", "header", "nav", 
+					"article", "section", "aside", "footer", "s", "tt", "code", "var", "samp", "kbd", "cite", "dfn", 
+					"del", "ins"];
+		return (tags.indexOf(tag) !== -1) ? true : false;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------//
+	/**
 	* Generates an HTML tag based on the param received.
-	* @param {string} style The HTML tag that should be generated
+	* @param {!string} tag - The HTML tag that should be generated
 	* @private
 	*/
 	function _addTag(tag) {
@@ -463,10 +484,19 @@ define(function (require, exports, module) {
 		if (canAdd === true) {
 			// if copy is highlighted, surround copy in HTML tag.
 			if (_editor.hasSelection()) {
-				_selection = _editor.getSelection();
-				_lng = _selection.end.ch - _selection.start.ch;
-				_currentDoc.replaceRange("<" + tag + ">" + _editor.getSelectedText() + "</" + tag + ">", _selection.start, _selection.end);
-				_editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
+				_selection = _editor.getSelection();// get selection object that contains start and end objects that contain line number and character position of selected text
+				var selectedText = _editor.getSelectedText();// get the selected text as a string
+				
+				// if the tag being added is bold, italic, or underline and the highlighted copy has that same tag on the outer most position of the highlight, remove 
+				// that tag instead of doubling up on that same tag
+				if (_shouldTagNotDouble(tag) === true && selectedText.indexOf("<" + tag) === 0 && selectedText.lastIndexOf("</" + tag + ">") === selectedText.length - ("</" + tag + ">").length) {
+					_currentDoc.replaceRange(selectedText.substring(selectedText.indexOf(">") + 1, selectedText.lastIndexOf("<")), _selection.start, _selection.end);
+				}
+				else {
+					_currentDoc.replaceRange("<" + tag + ">" + selectedText + "</" + tag + ">", _selection.start, _selection.end);
+				}
+				
+				_editor.setSelection({line: _selection.start.line, ch:_selection.start.ch}, _editor.getCursorPos());
 			}
 
 			// otherwise, insert HTML tag at cursor location and position the cursor in between the opening/closing tag
@@ -487,7 +517,7 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
-	* Generates an HTML <span> tag with a text style based on the param received.
+	* Generates an HTML <span> tag with a text style based on the style param received.
 	* @param {!string} style - The type of style that should be applied to the <span> tag being generated
 	* @private
 	*/
@@ -635,8 +665,7 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
-	* Uses _addTag() method to insert empty tag and gets Brackets ready for the user to begin typing 
-	* to capture input
+	* Uses _addTag() method to insert empty tag and gets Brackets ready for the user to begin typing to capture input
 	* @private
 	*/
 	function _insertEmptyTag() {
@@ -691,7 +720,7 @@ define(function (require, exports, module) {
 	*/
 	function _getShortcutString(shortcutArray) {
 		var string = ""; // create string to be used for the keyboard shortcut
-		shortcutArray.forEach(function (value, index) {
+		shortcutArray.forEach(function(value, index) {
 			if (value !== undefined && value !== null) {
 				string += value;
 				// if not last entry, add "-" to string
@@ -725,6 +754,7 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
+	* Modify default right-click menu selection action
 	* @private
 	*/
 	function onBeforeContextMenuOpen(e) {
@@ -737,7 +767,7 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
-	* Adds all menu items to menu bar and enabled hotkeys
+	* Adds all menu items to menu bar and enabled hotkeys when editing an HTML document
 	* @private
 	*/
 	function _addMenuItems() {
@@ -759,11 +789,18 @@ define(function (require, exports, module) {
 			_htmlFormatMenu.addMenuItem(ITALIC_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_STYLE)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
-
+			
 			_htmlFormatMenu.addMenuDivider();
 			
 			_htmlFormatMenu.addMenuItem(ANCHOR_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ANCHOR_TAG)), Menus.LAST);
-
+			_htmlFormatMenu.addMenuItem(PARAGRAPH_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PARAGRAPH_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(H1_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H1_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(H2_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H2_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(H3_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H3_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(H4_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H4_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(H5_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H5_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(H6_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H6_TAG)), Menus.LAST);
+			
 			_htmlFormatMenu.addMenuDivider();
 			
 			_htmlFormatMenu.addMenuItem(SPAN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SPAN_TAG)), Menus.LAST);
@@ -870,6 +907,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Used for checking changed preferences against saved ones
+	* @param {!string} target - The id of the HTML element to check its current preference options against other HTML Format preferences already set
 	* @private
 	*/
 	function _checkCurrentPrefernces(target) {
@@ -903,7 +941,9 @@ define(function (require, exports, module) {
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
-	* Update HTML Format Preferences panel content to match the saved preferences
+	* Update HTML Format Preferences panel content to display the saved preferences
+	* @param {!string} target - The id value from the PreferenceStrings matching the HTML in the Preference popup window
+	* @param {!array} pref - The array containing all the preference options being used by that command, if any
 	* @private
 	*/
 	function _updatePreferenceHTML(target, pref) {
@@ -919,6 +959,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Gets HTML Format Preferences panel content to update preference values
+	* @param {!string} target - The id value from the PreferenceStrings matching the HTML in the Preference popup window
 	* @private
 	*/
 	function _setPreferenceValues(target) {
@@ -954,6 +995,8 @@ define(function (require, exports, module) {
 		$("#italicEm input").prop("checked", _italicUsesEm);
 		$("#rightClick input").prop("checked", _addRightClick);
 		
+		// loop through all the preference keys in PreferenceStrings and update the HTML in the Preference popup window to 
+		// display their current saved preference values
 		var prefStringProp;
 		for (prefStringProp in PreferenceStrings) {
 			if (PreferenceStrings.hasOwnProperty(prefStringProp)) {
@@ -962,13 +1005,13 @@ define(function (require, exports, module) {
 		}
 		
 		// listen for keypresses and checkboxes on any of the form elements within the preference panel
-		$("#preferenceForm").on("change", function (e) {
-			if (e.target.type === "checkbox" && $(e.target.parentElement.parentElement).hasClass("bold_italic") == false) {
+		$("#preferenceForm").on("change", function(e) {
+			if (e.target.type === "checkbox" && $(e.target.parentElement.parentElement).hasClass("bold_italic") === false) {
 				_checkCurrentPrefernces(e.target.parentElement.parentElement.parentElement.getAttribute("id"));
 			}
 		});
 		
-		$("#preferenceForm").on("keypress", function (e) {
+		$("#preferenceForm").on("keypress", function(e) {
 			if (e.target.type === "text") {
 				// If the character is a lowercase letter, display it as uppercase
 				if ((e.keyCode > 64 && e.keyCode < 91) || ((e.keyCode > 96 && e.keyCode < 123))) {
@@ -984,7 +1027,14 @@ define(function (require, exports, module) {
 			}
 		});
 		
-		$("#btn_save").on("click", function (e) {
+		$("#btn_cancel").on("click", function(e) {
+			$("#preferenceForm").off("change");
+			$("#preferenceForm").off("keypress");
+			$("#btn_cancel").off("click");
+			$("#btn_save").off("click");
+		});
+		
+		$("#btn_save").on("click", function(e) {
 			_preferences.set(AdditionalPrefStrings.BOLD_USES_STRONG, $("#boldStrong input").prop("checked"));
 			_preferences.set(AdditionalPrefStrings.ITALIC_USES_EM, $("#italicEm input").prop("checked"));
 			_preferences.set(AdditionalPrefStrings.ADD_RIGHT_CLICK, $("#rightClick input").prop("checked"));
@@ -992,7 +1042,7 @@ define(function (require, exports, module) {
 			_italicUsesEm = _preferences.get(AdditionalPrefStrings.ITALIC_USES_EM);
 			_addRightClick = _preferences.get(AdditionalPrefStrings.ADD_RIGHT_CLICK);
 			
-			if (_duplicateShortcuts == false) {
+			if (_duplicateShortcuts === false) {
 				var prefStringProp;
 				for (prefStringProp in PreferenceStrings) {
 					if (PreferenceStrings.hasOwnProperty(prefStringProp)) {
@@ -1000,13 +1050,21 @@ define(function (require, exports, module) {
 					}
 				}
                 
-                // save preferences
+				$("#preferenceForm").off("change");
+				$("#preferenceForm").off("keypress");
+				$("#btn_cancel").off("click");
+				$("#btn_save").off("click");
+				
+				// save preferences
 				PreferencesManager.save();
                 
                 // tell brackets to reload with extensions so preference changes take place
 				CommandManager.execute(Commands.APP_RELOAD);
 			}
 			else {
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
 				alert("Duplicate keyboard shortcuts left unresolved.\nSave did not happen.");
 			}
 		});
@@ -1089,6 +1147,55 @@ define(function (require, exports, module) {
 			Strings.LABEL_ANCHOR_TAG_SHORTCUT, 
 			ANCHOR_TAG_COMMAND_ID, 
 			function() {_addTag("a");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_PARAGRAPH_TAG_SHORTCUT, 
+			PARAGRAPH_COMMAND_ID, 
+			function() {_addTag("p");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_H1_TAG_SHORTCUT, 
+			H1_COMMAND_ID, 
+			function() {_addTag("h1");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_H2_TAG_SHORTCUT, 
+			H2_COMMAND_ID, 
+			function() {_addTag("h2");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_H3_TAG_SHORTCUT, 
+			H3_COMMAND_ID, 
+			function() {_addTag("h3");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_H4_TAG_SHORTCUT, 
+			H4_COMMAND_ID, 
+			function() {_addTag("h4");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_H5_TAG_SHORTCUT, 
+			H5_COMMAND_ID, 
+			function() {_addTag("h5");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_H6_TAG_SHORTCUT, 
+			H6_COMMAND_ID, 
+			function() {_addTag("h6");}
 		)
 	);
 	
