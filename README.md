@@ -64,3 +64,7 @@ Requested feature to have H1–H6 and paragraph tags added to the drop-down menu
 Removing $.on() events with $.off() to be proper. When adding a tag around highlighted copy that already 
 features that same tag on the outsides of the text selection, remove that outer tag if it is a tag that 
 should not surround itself, i.e. two anchor tags.
+
+==================
+###Update - September 11, 2016
+Trying to fix bugs with the shortcut/hotkey assignment with numbers.
