@@ -19,7 +19,7 @@
  */
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
-/*global define, $, brackets, Mustache */
+/*global define, $, brackets, navigator */
 
 define(function (require, exports, module) {
 	'use strict';
@@ -30,7 +30,7 @@ define(function (require, exports, module) {
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// Referencing for reloading Brackets after saving preference changes. 
 	// Reloading Brackets is required for hotkey changes to register.
-    var Commands = brackets.getModule("command/Commands");
+	var Commands = brackets.getModule("command/Commands");
 	
 	// Used for registering all the menubar actions that can be executed.
 	var CommandManager = brackets.getModule("command/CommandManager");
@@ -63,6 +63,9 @@ define(function (require, exports, module) {
 	
 	// Used for styling the preference screen.
 	var ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
+	
+	// Used for rendering the HTML Format Preference window
+	var Mustache = brackets.getModule("thirdparty/mustache/mustache");
 	
 	// Strings all used for handling the generation of menu bar options, hotkeys, right-click menu, etc.
 	var Strings = require("strings");
@@ -1011,19 +1014,39 @@ define(function (require, exports, module) {
 			}
 		});
 		
-		$("#preferenceForm").on("keypress", function(e) {
+		$("#preferenceForm").on("keyup", function(e) {
 			if (e.target.type === "text") {
-				// If the character is a lowercase letter, display it as uppercase
-				if ((e.keyCode > 64 && e.keyCode < 91) || ((e.keyCode > 96 && e.keyCode < 123))) {
+				//if (true) {
+					// shortcut_modifier_ctrlCmd
+					// shortcut_modifier_shift
+					// shortcut_modifier_alt
+					// shortcut_modifier_ctrl
+					// e.target.parentElement.getElementsByTagName("label");
+				//}
+				
+				// If the character is a letter, display it as uppercase since that is what is shown in the menu bar
+				if (e.keyCode > 64 && e.keyCode < 91) {
 					e.target.value = String.fromCharCode(e.keyCode).toUpperCase();
 					_checkCurrentPrefernces(e.target.parentElement.parentElement.getAttribute("id"));
 				}
-
-				// else if the character is not a number, grave accent, back/forward slash, bracket, brace, comma, 
-				// period, minus, semicolon, single-quote, or equals, prevent it from being used
-				else if (e.keyCode < 65 || e.keyCode > 122) {
+				// else if the character is a number on the numpad or number row
+				else if ((e.keyCode > 47 && e.keyCode < 58) || (e.keyCode > 95 && e.keyCode < 106)) {
+					_checkCurrentPrefernces(e.target.parentElement.parentElement.getAttribute("id"));
+				}
+				// else if the character is any of the other characters on the keyboard without the 
+				// use of CTRL, SHIFT, ALT, or any combination of the three
+				else if ((e.keyCode > 185 && e.keyCode < 193) || (e.keyCode > 218 && e.keyCode < 223)) {
+					_checkCurrentPrefernces(e.target.parentElement.parentElement.getAttribute("id"));
+				}
+				else {
 					e.preventDefault();
 				}
+			}
+		});
+		
+		$("#preferenceForm").on("click", function(e) {
+			if (e.target.type === "text") {
+				e.target.select();
 			}
 		});
 		
@@ -1049,16 +1072,17 @@ define(function (require, exports, module) {
 						_setPreferenceValues(PreferenceStrings[prefStringProp]);
 					}
 				}
-                
+				
 				$("#preferenceForm").off("change");
-				$("#preferenceForm").off("keypress");
+				$("#preferenceForm").off("keyup");
+				$("#preferenceForm").off("click");
 				$("#btn_cancel").off("click");
 				$("#btn_save").off("click");
 				
 				// save preferences
 				PreferencesManager.save();
-                
-                // tell brackets to reload with extensions so preference changes take place
+				
+				// tell brackets to reload with extensions so preference changes take place
 				CommandManager.execute(Commands.APP_RELOAD);
 			}
 			else {
