@@ -18,8 +18,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
-/*global define, $, brackets, navigator */
+/* jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
+/* global define, $, brackets, navigator, Mustache */
 
 define(function (require, exports, module) {
 	'use strict';
@@ -65,7 +65,8 @@ define(function (require, exports, module) {
 	var ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
 	
 	// Used for rendering the HTML Format Preference window
-	var Mustache = brackets.getModule("thirdparty/mustache/mustache");
+	// breaking Brackets versions not 1.7 at the moment
+	// var Mustache = brackets.getModule("thirdparty/mustache/mustache");
 	
 	// Strings all used for handling the generation of menu bar options, hotkeys, right-click menu, etc.
 	var Strings = require("strings");
