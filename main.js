@@ -489,6 +489,7 @@ define(function (require, exports, module) {
 			// if copy is highlighted, surround copy in HTML tag.
 			if (_editor.hasSelection()) {
 				_selection = _editor.getSelection();// get selection object that contains start and end objects that contain line number and character position of selected text
+ 				_lng = _selection.end.ch - _selection.start.ch;
 				var selectedText = _editor.getSelectedText();// get the selected text as a string
 				
 				// if the tag being added is bold, italic, or underline and the highlighted copy has that same tag on the outer most position of the highlight, remove 
