@@ -3,7 +3,7 @@
 	"title": "HTML Format",
 	"description": "An extension containing menubar and keyboard shortcuts for inserting HTML tags. Currently the list of available HTML tags for inserting through the menubar or a keyboard shortcut mimics the current Dreamweaver options. A preference window is available to change the default keyboard shortcuts.",
 	"homepage": "https://github.com/jediwade/brackets-htmlformat",
-	"version": "0.3.7",
+	"version": "0.3.8",
 	"author": "Wade Walker <wadedwalker@gmail.com> (http://wadedwalker.com)",
 	"license": "MIT",
 	"engines": {
