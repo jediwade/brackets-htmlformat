@@ -73,3 +73,7 @@ Trying to fix bugs with the shortcut/hotkey assignment with numbers.
 ###Update - September 12, 2016
 Added a quick fix for older versions of Brackets after I made changes to get rid of a deprecation warning.
 This will probably be the last version update for older versions of Brackets.
+
+==================
+###Update - September 13, 2016
+Bug fixes
