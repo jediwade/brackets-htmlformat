@@ -19,7 +19,7 @@
  */
 
 /* jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
-/* global define, $, brackets, navigator, Mustache */
+/* global define, $, brackets, navigator */
 
 define(function (require, exports, module) {
 	'use strict';
@@ -65,8 +65,7 @@ define(function (require, exports, module) {
 	var ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
 	
 	// Used for rendering the HTML Format Preference window
-	// breaking Brackets versions not 1.7 at the moment
-	// var Mustache = brackets.getModule("thirdparty/mustache/mustache");
+	var Mustache = brackets.getModule("thirdparty/mustache/mustache");
 	
 	// Strings all used for handling the generation of menu bar options, hotkeys, right-click menu, etc.
 	var Strings = require("strings");
@@ -105,8 +104,9 @@ define(function (require, exports, module) {
 	var DIV_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.DIV_TAG;
 	var HEADER_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.HEADER_TAG;
 	var NAV_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.NAV_TAG;
-	var ARTICLE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ARTICLE_TAG;
+	var MAIN_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.MAIN_TAG;
 	var SECTION_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.SECTION_TAG;
+	var ARTICLE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ARTICLE_TAG;
 	var ASIDE_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.ASIDE_TAG;
 	var FOOTER_COMMAND_ID = COMMAND_ID + "." + PreferenceStrings.FOOTER_TAG;
 	
@@ -275,6 +275,7 @@ define(function (require, exports, module) {
 	ExtensionUtils.loadStyleSheet(module, "preferencePanel.css");
 	var _control = (_platform === "mac") ? "Cmd" : "Ctrl";
 	
+	// Set Defaults for Bold, Italic, Underline, Empty Tag, and HTML Format Preferences
 	// command, shift, alt, control, character
 	if (_preferences.get(PreferenceStrings.BOLD_TAG) === undefined) {
 		_preferences.set(PreferenceStrings.BOLD_TAG, [_control, null, null, null, "B"]);
@@ -468,7 +469,7 @@ define(function (require, exports, module) {
 	*/
 	function _shouldTagNotDouble(tag) {
 		var tags = ["b", "strong", "i", "em", "u", "a", "p", "h1", "h2", "h3", "h4", "h5", "h6", "header", "nav", 
-					"article", "section", "aside", "footer", "s", "tt", "code", "var", "samp", "kbd", "cite", "dfn", 
+					"main", "section", "article", "aside", "footer", "s", "tt", "code", "var", "samp", "kbd", "cite", "dfn", 
 					"del", "ins"];
 		return (tags.indexOf(tag) !== -1) ? true : false;
 	}
@@ -812,8 +813,9 @@ define(function (require, exports, module) {
 			_htmlFormatMenu.addMenuItem(DIV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DIV_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(HEADER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.HEADER_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(NAV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(ARTICLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ARTICLE_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(MAIN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(SECTION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SECTION_TAG)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(ARTICLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ARTICLE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(ASIDE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ASIDE_TAG)), Menus.LAST);
 			_htmlFormatMenu.addMenuItem(FOOTER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.FOOTER_TAG)), Menus.LAST);
 
@@ -1054,7 +1056,8 @@ define(function (require, exports, module) {
 		
 		$("#btn_cancel").on("click", function(e) {
 			$("#preferenceForm").off("change");
-			$("#preferenceForm").off("keypress");
+			$("#preferenceForm").off("keyup");
+			$("#preferenceForm").off("click");
 			$("#btn_cancel").off("click");
 			$("#btn_save").off("click");
 		});
@@ -1115,6 +1118,10 @@ define(function (require, exports, module) {
 			if ((_htmlFormatMenu === null || _htmlFormatMenu === undefined) && shouldAdd === true) {
 				_addMenuItems();
 			}
+		}
+		// If no file is open and the HTML Format menu is currently visible, remove it
+		else if (MainViewManager.getAllOpenFiles().length === 0 && _htmlFormatMenu !== null && _htmlFormatMenu !== undefined) {
+			_removeMenuItems();
 		}
 	}
 	
@@ -1256,9 +1263,9 @@ define(function (require, exports, module) {
 	);
 	_commands.push(
 		CommandManager.register(
-			Strings.LABEL_ARTICLE_TAG_SHORTCUT, 
-			ARTICLE_COMMAND_ID, 
-			function() {_addTag("article");}
+			Strings.LABEL_MAIN_TAG_SHORTCUT, 
+			MAIN_COMMAND_ID, 
+			function() {_addTag("main");}
 		)
 	);
 	_commands.push(
@@ -1266,6 +1273,13 @@ define(function (require, exports, module) {
 			Strings.LABEL_SECTION_TAG_SHORTCUT, 
 			SECTION_COMMAND_ID, 
 			function() {_addTag("section");}
+		)
+	);
+	_commands.push(
+		CommandManager.register(
+			Strings.LABEL_ARTICLE_TAG_SHORTCUT, 
+			ARTICLE_COMMAND_ID, 
+			function() {_addTag("article");}
 		)
 	);
 	_commands.push(

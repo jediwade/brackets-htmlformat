@@ -77,3 +77,7 @@ This will probably be the last version update for older versions of Brackets.
 ==================
 ###Update - September 13, 2016
 Bug fixes
+
+==================
+###Update - January 11, 2017
+Adding in HTML5 tag "main", per user request. Requiring latest version of Brackets by having proper implementation of "Mustache". Removing HTML Format menu from the Menu bar when there are no files open.
