@@ -18,11 +18,15 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
-/* global define, $, brackets, navigator */
+/*jslint
+	vars:true, plusplus:true, devel:true, nomen:true, regexp:true, indent:4, maxerr:50, eqeq:true, white:true
+*/
+/*global
+	define, $, brackets, navigator, console
+*/
 
 define(function (require, exports, module) {
-	'use strict';
+	"use strict";
 	console.log("INITIALIZING HTML FORMAT EXTENSION");
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
@@ -305,7 +309,8 @@ define(function (require, exports, module) {
 			prefString +=				"<div class='shortcut_modifiers'>";
 			if (_platform === "mac") {
 				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' />{{MODIFIER_CMD}}</label>+";
-			} else {
+			}
+			else {
 				prefString +=				"<label><input class='shortcut_modifier_ctrlCmd' type='checkbox' title='{{TITLE_CTRL}}' />{{MODIFIER_CONTROL_CMD}}</label>+";
 			}
 			prefString +=					"<label><input class='shortcut_modifier_shift' type='checkbox' title='{{TITLE_SHIFT}}' />{{MODIFIER_SHIFT}}</label>+";
@@ -374,6 +379,7 @@ define(function (require, exports, module) {
 		else if (style === "monospace" || style === "tt") {
 			_style = "font-family:'Lucida Console', monospace;";
 		}
+		
 		return _style;
 	}
 	
@@ -390,7 +396,7 @@ define(function (require, exports, module) {
 		var styleString = "";
 		var closingQuote;
 		var cursorPos = _editor.getCursorPos().ch;
-
+		
 		while (styleStart !== -1) {
 			styleStart = entireLine.indexOf("style=", styleStart);
 
@@ -402,7 +408,7 @@ define(function (require, exports, module) {
 				styles.push({start:styleStart, end:styleEnd, style:styleString});
 			}
 		}
-
+		
 		while (styles.length !== 0) {
 			if (cursorPos >= styles[styles.length-1].start && cursorPos <= styles[styles.length-1].end) {
 				if (style.length !== 0) {
@@ -490,7 +496,7 @@ define(function (require, exports, module) {
 			// if copy is highlighted, surround copy in HTML tag.
 			if (_editor.hasSelection()) {
 				_selection = _editor.getSelection();// get selection object that contains start and end objects that contain line number and character position of selected text
- 				_lng = _selection.end.ch - _selection.start.ch;
+				_lng = _selection.end.ch - _selection.start.ch;
 				var selectedText = _editor.getSelectedText();// get the selected text as a string
 				
 				// if the tag being added is bold, italic, or underline and the highlighted copy has that same tag on the outer most position of the highlight, remove 
@@ -502,9 +508,9 @@ define(function (require, exports, module) {
 					_currentDoc.replaceRange("<" + tag + ">" + selectedText + "</" + tag + ">", _selection.start, _selection.end);
 				}
 				
-				_editor.setSelection({line: _selection.start.line, ch:_selection.start.ch}, _editor.getCursorPos());
+				_editor.setSelection({line:_selection.start.line, ch:_selection.start.ch}, _editor.getCursorPos());
 			}
-
+			
 			// otherwise, insert HTML tag at cursor location and position the cursor in between the opening/closing tag
 			else {
 				_currentDoc.replaceRange("<" + tag + ">" + "</" + tag + ">", _editor.getCursorPos());
@@ -537,11 +543,11 @@ define(function (require, exports, module) {
 			var _tagStart = "<span style=";
 			var _style = _getStyle(style);
 			var _tagEnd = "</span>";
-
+			
 			if (_editor.hasSelection()) {
 				_selection = _editor.getSelection();
 				_currentDoc.replaceRange(_tagStart + "\"" + _style + "\"" + ">" + _editor.getSelectedText() + _tagEnd, _selection.start, _selection.end);
-				_editor.setSelection({line: _selection.start.line, ch: (_selection.start.ch)}, _editor.getCursorPos());
+				_editor.setSelection({line:_selection.start.line, ch:(_selection.start.ch)}, _editor.getCursorPos());
 			}
 			else {
 				_currentDoc.replaceRange(_tagStart + "\"" + _style + "\"" + ">" + _tagEnd, _editor.getCursorPos());
@@ -559,9 +565,9 @@ define(function (require, exports, module) {
 	* Removes the Keyboard event listener for the _insertEmptyTag() method once the "Enter" key has been pressed.
 	* @private
 	*/
-	function _disposeAddTagListeners(listener) {
+	function _disposeAddTagListeners() {
+		KeyBindingManager.removeGlobalKeydownHook(_keyboardListener);
 		_editor.off("cursorActivity");
-		KeyBindingManager.removeGlobalKeydownHook(listener);
 		_lng = 0;
 		_currentDoc = null;
 		_currentPos = null;
@@ -572,6 +578,7 @@ define(function (require, exports, module) {
 	/**
 	* Keyboard event listener function to capture key presses. Used for generating an open and close HTML tag. 
 	* Pressing enter releases key press capture.
+	* @param {!object} event - The event data from the keyboard event.
 	* @private
 	*/
 	function _keyboardListener(event) {
@@ -582,29 +589,29 @@ define(function (require, exports, module) {
 		if (event.keyCode === 13 || event.keyCode === 27) {
 			event.preventDefault();
 			event.stopPropagation();
-			_disposeAddTagListeners(_keyboardListener);
+			_disposeAddTagListeners();
 		}
 		
 		// if a key that was pressed is a letter, allow it to go through and duplicate it in the closing tag.
 		else if (event.keyCode > 64 && event.keyCode < 91) {
-			_currentDoc.replaceRange(String.fromCharCode(event.keyCode).toLowerCase(), {line: _currentPos.line, ch: _currentPos.ch + _lng + 3});
+			_currentDoc.replaceRange(String.fromCharCode(event.keyCode).toLowerCase(), {line:_currentPos.line, ch:_currentPos.ch + _lng + 3});
 			_emptyTagPos.open.end = {line:_currentPos.line, ch:_emptyTagPos.open.start.ch + 3 + _lng};
 			_emptyTagPos.close.start = {line:_currentPos.line, ch:_emptyTagPos.open.end.ch};
 			_emptyTagPos.close.end = {line:_currentPos.line, ch:_emptyTagPos.close.start.ch + 4 + _lng};
-				
+			
 			_lng += 1;
 		}
 		
 		// If backspace deleting and the tag is just greater/less-than signs before backspace, stop empty tag action. Otherwise, delete character.
 		else if (event.keyCode === 8) {
 			if (_lng !== -1) {
-				_currentDoc.replaceRange("", {line: _currentPos.line, ch: _currentPos.ch + _lng + 2}, {line: _currentPos.line, ch: _currentPos.ch + _lng + 3});
+				_currentDoc.replaceRange("", {line:_currentPos.line, ch:_currentPos.ch + _lng + 2}, {line:_currentPos.line, ch:_currentPos.ch + _lng + 3});
 				_emptyTagPos.open.end = {line:_currentPos.line, ch:_emptyTagPos.open.start.ch + 1 + _lng};
 				_emptyTagPos.close.start = {line:_currentPos.line, ch:_emptyTagPos.open.end.ch};
 				_emptyTagPos.close.end = {line:_currentPos.line, ch:_emptyTagPos.close.start.ch + 2 + _lng};
 			}
 			else {
-				_disposeAddTagListeners(_keyboardListener);
+				_disposeAddTagListeners();
 			}
 			
 			_lng -= 1;
@@ -613,13 +620,13 @@ define(function (require, exports, module) {
 		// If forward deleting and the tag is just greater/less-than signs, stop empty tag action. Otherwise, delete character.
 		else if (event.keyCode === 46) {
 			if (_lng !== -1) {
-				_currentDoc.replaceRange("", {line: _currentPos.line, ch: _currentPos.ch + _lng + 3}, {line: _currentPos.line, ch: _currentPos.ch + _lng + 4});
+				_currentDoc.replaceRange("", {line:_currentPos.line, ch:_currentPos.ch + _lng + 3}, {line:_currentPos.line, ch:_currentPos.ch + _lng + 4});
 				_emptyTagPos.open.end = {line:_currentPos.line, ch:_emptyTagPos.open.start.ch + 2 + _lng};
 				_emptyTagPos.close.start = {line:_currentPos.line, ch:_emptyTagPos.open.end.ch};
 				_emptyTagPos.close.end = {line:_currentPos.line, ch:_emptyTagPos.close.start.ch + 2 + _lng};
 			}
 			else {
-				_disposeAddTagListeners(_keyboardListener);
+				_disposeAddTagListeners();
 			}
 			
 			_lng -= 1;
@@ -627,24 +634,24 @@ define(function (require, exports, module) {
 		
 		// If the shortcut Control/Command + Z is pressed, end empty tag action.
 		else if (event.keyCode === 90 && (event.ctrlKey || event.metaKey)) {
-			_disposeAddTagListeners(_keyboardListener);
+			_disposeAddTagListeners();
 		}
 		
 		// If the key pressed is the up or down arrow key, end empty tag action.
 		else if (event.keyCode === 38 || event.keyCode === 40) {
-			_disposeAddTagListeners(_keyboardListener);
+			_disposeAddTagListeners();
 		}
 		
 		// If the key pressed is the left arrow key, check cursor position. if cursor position is outside the open tag, end empty tag action.
 		// Because this is a keyDown event, we must check to see what the character behind of the cursor currently is
 		else if (event.keyCode === 37 && _currentDoc.getRange({line:_currentPos.line, ch:_currentPos.ch - 1}, _currentPos) === "<") {
-			_disposeAddTagListeners(_keyboardListener);
+			_disposeAddTagListeners();
 		}
 		
 		// If the key pressed is the right arrow key, check cursor position. if cursor position is outside the open tag, end empty tag action.
 		// Because this is a keyDown event, we must check to see what the character ahead of the cursor currently is
 		else if (event.keyCode === 39 && _currentDoc.getRange(_currentPos,{line:_currentPos.line, ch:_currentPos.ch + 1}) === ">") {
-			_disposeAddTagListeners(_keyboardListener);
+			_disposeAddTagListeners();
 		}
 		
 		// If any other key pressed is not the left or right arrow key, prevent normal behavior
@@ -659,13 +666,14 @@ define(function (require, exports, module) {
 	/**
 	* Listener for the cursor changing position while in the empty tag action. If the cursor leaves the open tag, 
 	* end the empty tag action.
+	* @param {!object} event - The event data for the cursor change event.
 	* @private
 	*/
 	function _onCursorChange(event) {
 		_currentPos = _editor.getCursorPos();
 		
 		if (_currentPos.line !== _emptyTagPos.open.start.line || ((_currentPos.ch < _emptyTagPos.open.start.ch || _currentPos.ch > _emptyTagPos.open.end.ch) && _currentPos.line !== _emptyTagPos.open.start.line)) {
-				_disposeAddTagListeners(_keyboardListener);
+				_disposeAddTagListeners();
 		}
 	}
 	
@@ -700,8 +708,8 @@ define(function (require, exports, module) {
 		};
 		
 		// set open tag positions.
-		_emptyTagPos.open.start = {line:curPos.line, ch:curPos.ch - 2};
-		_emptyTagPos.open.end = {line:curPos.line, ch:curPos.ch};
+		// REMOVE? _emptyTagPos.open.start = {line:curPos.line, ch:curPos.ch - 2};
+		// REMOVE? _emptyTagPos.open.end = {line:curPos.line, ch:curPos.ch};
 		
 		// If length is zero, the move the cursor back 1 space to be inside the empty open tag
 		if (_lng === 0) {
@@ -722,6 +730,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Creates the string representation of the array of keyboard shortcut keys to use for a keyboard shortcut
+	* @param {!array} shortcutArray - The array of shortcut codes.
 	* @private
 	*/
 	function _getShortcutString(shortcutArray) {
@@ -742,6 +751,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Generate keyboard shortcut
+	* @param {!array} shortcutArray - The array of shortcut codes.
 	* @private
 	*/
 	function _generateShortcut(shortcutArray) {
@@ -749,7 +759,7 @@ define(function (require, exports, module) {
 		var arr;
 		
 		if (string !== "") {
-			arr = [{ "key": string, "platform": _platform }];
+			arr = [{"key":string, "platform":_platform}];
 		}
 		else {
 			arr = [];
@@ -761,9 +771,10 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Modify default right-click menu selection action
+	* @param {!object} event - The event data for the context menu about to open
 	* @private
 	*/
-	function onBeforeContextMenuOpen(e) {
+	function onBeforeContextMenuOpen(event) {
 		var selection = EditorManager.getCurrentFullEditor().getSelection();
 		
 		if (selection.end.ch - selection.start.ch <= 2) {
@@ -789,64 +800,72 @@ define(function (require, exports, module) {
 				Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).on("beforeContextMenuOpen", onBeforeContextMenuOpen);
 			}
 			
+			// BOLD, ITALIC, UNDERLINE
 			_htmlFormatMenu.addMenuItem(BOLD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(BOLD_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_STYLE)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(ITALIC_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(ITALIC_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_STYLE)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.LAST);
+			_htmlFormatMenu.addMenuItem(BOLD_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.BOLD_STYLE)), Menus.AFTER, BOLD_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(ITALIC_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_TAG)), Menus.AFTER, BOLD_STYLE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(ITALIC_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ITALIC_STYLE)), Menus.AFTER, ITALIC_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(UNDERLINE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_TAG)), Menus.AFTER, ITALIC_STYLE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(UNDERLINE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.UNDERLINE_STYLE)), Menus.AFTER, UNDERLINE_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuDivider();
+			var menuDivider1 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, UNDERLINE_STYLE_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuItem(ANCHOR_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ANCHOR_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(PARAGRAPH_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PARAGRAPH_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(H1_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H1_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(H2_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H2_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(H3_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H3_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(H4_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H4_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(H5_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H5_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(H6_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H6_TAG)), Menus.LAST);
+			// ANCHOR, PARAGRAPH, H1-6
+			_htmlFormatMenu.addMenuItem(ANCHOR_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ANCHOR_TAG)), Menus.AFTER, menuDivider1.dividerId);
+			_htmlFormatMenu.addMenuItem(PARAGRAPH_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PARAGRAPH_TAG)), Menus.AFTER, ANCHOR_TAG_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(H1_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H1_TAG)), Menus.AFTER, PARAGRAPH_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(H2_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H2_TAG)), Menus.AFTER, H1_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(H3_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H3_TAG)), Menus.AFTER, H2_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(H4_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H4_TAG)), Menus.AFTER, H3_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(H5_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H5_TAG)), Menus.AFTER, H4_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(H6_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.H6_TAG)), Menus.AFTER, H5_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuDivider();
+			var menuDivider2 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, H6_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuItem(SPAN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SPAN_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(DIV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DIV_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(HEADER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.HEADER_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(NAV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(MAIN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(SECTION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SECTION_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(ARTICLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ARTICLE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(ASIDE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ASIDE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(FOOTER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.FOOTER_TAG)), Menus.LAST);
-
-			_htmlFormatMenu.addMenuDivider();
+			// SPAN, DIV, HTML5 structure tags
+			_htmlFormatMenu.addMenuItem(SPAN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SPAN_TAG)), Menus.AFTER, menuDivider2.dividerId);
+			_htmlFormatMenu.addMenuItem(DIV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DIV_TAG)), Menus.AFTER, SPAN_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(HEADER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.HEADER_TAG)), Menus.AFTER, DIV_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(NAV_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.AFTER, HEADER_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(MAIN_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.NAV_TAG)), Menus.AFTER, NAV_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(SECTION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SECTION_TAG)), Menus.AFTER, MAIN_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(ARTICLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ARTICLE_TAG)), Menus.AFTER, SECTION_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(ASIDE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.ASIDE_TAG)), Menus.AFTER, ARTICLE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(FOOTER_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.FOOTER_TAG)), Menus.AFTER, ASIDE_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuItem(STRIKE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(STRIKE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_STYLE)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(TELETYPE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(TELETYPE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.LAST);
-
-			_htmlFormatMenu.addMenuDivider();
+			var menuDivider3 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, FOOTER_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuItem(CODE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CODE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(VARIABLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.VARIABLE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(SAMPLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SAMPLE_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(KEYBOARD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.KEYBOARD_TAG)), Menus.LAST);
-
-			_htmlFormatMenu.addMenuDivider();
-
-			_htmlFormatMenu.addMenuItem(CITATION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CITATION_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(DEFINITION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DEFINITION_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(DELETED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DELETED_TAG)), Menus.LAST);
-			_htmlFormatMenu.addMenuItem(INSERTED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.INSERTED_TAG)), Menus.LAST);
-
-			_htmlFormatMenu.addMenuDivider();
-
-			_htmlFormatMenu.addMenuItem(INSERT_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.EMPTY_TAG)), Menus.LAST);
-
-			_htmlFormatMenu.addMenuDivider();
+			// STRIKE, TELETYPE
+			_htmlFormatMenu.addMenuItem(STRIKE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_TAG)), Menus.AFTER, menuDivider3.dividerId);
+			_htmlFormatMenu.addMenuItem(STRIKE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.STRIKE_STYLE)), Menus.AFTER, STRIKE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(TELETYPE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.AFTER, STRIKE_STYLE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(TELETYPE_STYLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.TELETYPE_TAG)), Menus.AFTER, TELETYPE_COMMAND_ID);
 			
-			_htmlFormatMenu.addMenuItem(PREFERENCE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PREFERENCES)), Menus.LAST);
+			var menuDivider4 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, TELETYPE_STYLE_COMMAND_ID);
+			
+			// CODE, VARIABLE, SAMPLE, KEYBOARD
+			_htmlFormatMenu.addMenuItem(CODE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CODE_TAG)), Menus.AFTER, menuDivider4.dividerId);
+			_htmlFormatMenu.addMenuItem(VARIABLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.VARIABLE_TAG)), Menus.AFTER, CODE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(SAMPLE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.SAMPLE_TAG)), Menus.AFTER, VARIABLE_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(KEYBOARD_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.KEYBOARD_TAG)), Menus.AFTER, SAMPLE_COMMAND_ID);
+			
+			var menuDivider5 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, KEYBOARD_COMMAND_ID);
+			
+			// CITATION, DEFINITION, DELETED, INSERTED
+			_htmlFormatMenu.addMenuItem(CITATION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.CITATION_TAG)), Menus.AFTER, menuDivider5.dividerId);
+			_htmlFormatMenu.addMenuItem(DEFINITION_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DEFINITION_TAG)), Menus.AFTER, CITATION_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(DELETED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.DELETED_TAG)), Menus.AFTER, DEFINITION_COMMAND_ID);
+			_htmlFormatMenu.addMenuItem(INSERTED_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.INSERTED_TAG)), Menus.AFTER, DELETED_COMMAND_ID);
+			
+			var menuDivider6 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, INSERTED_COMMAND_ID);
+			
+			// INSERT EMPTY TAG
+			_htmlFormatMenu.addMenuItem(INSERT_TAG_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.EMPTY_TAG)), Menus.AFTER, menuDivider6.dividerId);
+			
+			var menuDivider7 = _htmlFormatMenu.addMenuDivider(Menus.AFTER, INSERT_TAG_COMMAND_ID);
+			
+			// HTML FORMAT PREFERENCS
+			_htmlFormatMenu.addMenuItem(PREFERENCE_COMMAND_ID, _generateShortcut(_preferences.get(PreferenceStrings.PREFERENCES)), Menus.AFTER, menuDivider7.dividerId);
 		}
 		
 		// enable hotkeys
@@ -865,7 +884,7 @@ define(function (require, exports, module) {
 		_commands.forEach(function(command) {
 			command.setEnabled(false);
 		});
-			
+		
 		// remove right-click menu options
 		if (_addRightClick === true) {
 			Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).removeMenuItem(BOLD_COMMAND_ID);
@@ -894,6 +913,7 @@ define(function (require, exports, module) {
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Gets HTML Format Preferences panel content to update preference values
+	* @param {!string} target - The id of the HTML element to get preference values for.
 	* @private
 	*/
 	function _getPreferenceValues(target) {
@@ -907,14 +927,15 @@ define(function (require, exports, module) {
 		else {
 			arr.push(null);
 		}
-		arr.push( $("#" + target + " .shortcut_modifiers .shortcut_modifier_char").prop("value") );
+		arr.push($("#" + target + " .shortcut_modifiers .shortcut_modifier_char").prop("value"));
+		
 		return arr;
 	}
 	
 	//------------------------------------------------------------------------------------------------------------//
 	/**
 	* Used for checking changed preferences against saved ones
-	* @param {!string} target - The id of the HTML element to check its current preference options against other HTML Format preferences already set
+	* @param {!string} target - The id of the HTML element to check its current preference options against other HTML Format preferences already set.
 	* @private
 	*/
 	function _checkCurrentPrefernces(target) {
@@ -1124,7 +1145,6 @@ define(function (require, exports, module) {
 			_removeMenuItems();
 		}
 	}
-	
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------//
 	// FINAL SETUP - add commands and event listener for file change

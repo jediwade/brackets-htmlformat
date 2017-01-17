@@ -80,4 +80,10 @@ Bug fixes
 
 ==================
 ###Update - January 11, 2017
-Adding in HTML5 tag "main", per user request. Requiring latest version of Brackets by having proper implementation of "Mustache". Removing HTML Format menu from the Menu bar when there are no files open.
+Adding in HTML5 tag "main", per user request. Requiring latest version of Brackets by having proper 
+implementation of "Mustache". Removing HTML Format menu from the Menu bar when there are no files open.
+
+==================
+###Update - January 16, 2017
+Fixed issue with the menu bar items not being in the correct order on Windows 10 after ~17 items were added. 
+After ~17 items, the order would be in reverse from order added and all dividers would be at the bottom.
