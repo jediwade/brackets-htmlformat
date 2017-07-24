@@ -1,0 +1,72 @@
+<div id="htmlFormatPreferences" class="modal">
+	<div class="modal-header">
+		<h1 class="dialog-title">{{TITLE_PREFERENCES}}</h1>
+		
+		<ul class="nav nav-tabs no-focus">
+			<li class="active">
+				<a href="#general" class="general" data-toggle="tab"><img src="{{HTML_FORMAT_EXTENSION_PATH}}/html/images/general.svg"><br>General</a>
+			</li>
+            <li>
+                <a href="#tags" class="tags" data-toggle="tab"><img src="{{HTML_FORMAT_EXTENSION_PATH}}/html/images/htmlTag.svg"><br>HTML Tags</a>
+            </li>
+		</ul>
+	</div>
+	
+	<div class="modal-body no-padding table-striped">
+		<form id="preferenceForm" class="tab-content">
+            <div id="general" class="tab-pane active">
+                <table class="table">
+                    <tr>
+                        <td id="extensions">
+                            {{EXTENSION_LABEL}}<br>
+                            <input type="text" placeholder="{{DEFAULT_EXTENSIONS}}" value="{{DEFAULT_EXTENSIONS}}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="boldStrong">
+                            <label><input type="checkbox" />{{BOLD_STRONG}}</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="italicEm">
+                            <label><input type="checkbox" />{{ITALIC_EM}}</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="rightClick">
+                            <label><input type="checkbox" />{{ADD_RIGHT_CLICK}}</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="breakType">
+                            <label><input type="checkbox" />{{BREAK_TYPE}}</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="breakTypeNextLine">
+                            <label><input type="checkbox" />{{BREAK_TYPE_NEXT_LINE}}</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div id="tags" class="tab-pane">
+                <table class="table">
+                    <tr>
+                        <td id="warning">
+                            {{SHORTCUTS_WARNING_1}}<br>
+                            {{SHORTCUTS_WARNING_2}}
+                        </td>
+                    </tr>
+                    <tr id="shortcuts"></tr>
+                </table>
+            </div>
+		</form>
+	</div>
+	
+	<div class="modal-footer">
+		<button class="dialog-button btn left" data-button-id="cancel">{{BTN_CANCEL}}</button>
+		<button class="dialog-button btn secondary" data-button-id="saveReload" id="btn_save_reload">{{BTN_SAVE_RELOAD}}</button>
+		<button class="dialog-button btn primary" data-button-id="save" id="btn_save">{{BTN_SAVE}}</button>
+	</div>
+</div>

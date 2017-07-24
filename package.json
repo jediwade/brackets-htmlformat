@@ -1,9 +1,9 @@
 {
 	"name":"brackets-htmlformat",
 	"title":"HTML Format",
-	"description":"An extension containing menubar and keyboard shortcuts for inserting HTML tags. Currently the list of available HTML tags for inserting through the menubar or a keyboard shortcut mimics the current Dreamweaver options. A preference window is available to change the default keyboard shortcuts.",
-	"homepage":"https://github.com/jediwade/brackets-htmlformat",
-	"version":"0.4.0",
+	"description":"Adds a menubar of HTML tags to be inserted into an HTML document. Each HTML tag can be given a customizable keyboard shortcut. Add bold/italic/underline to right-click menu. Many more features available.",
+	"homepage":"https://github.com/wadedwalker/brackets-htmlformat",
+	"version":"1.0.0",
 	"author":"Wade Walker <wadedwalker@gmail.com> (http://wadedwalker.com)",
 	"license":"MIT",
 	"engines":{

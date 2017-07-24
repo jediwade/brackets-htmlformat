@@ -18,10 +18,19 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
-/*global define */
+/* jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
+/* global define */
+/*
+This JS file is used to have preference strings for any item that will not appear in the HTML Format menu bar list.
+*/
 define({
-	"BOLD_USES_STRONG"	: "boldUsesStrong",
-	"ITALIC_USES_EM"	: "italicUsesEm",
-	"ADD_RIGHT_CLICK"	: "rightClick"
+	"WHATS_NEW"					: "",
+	"EXTENSIONS"				: "extensions",
+	"BOLD_USES_STRONG"			: "boldUsesStrong",
+	"ITALIC_USES_EM"			: "italicUsesEm",
+	"ADD_RIGHT_CLICK"			: "rightClick",
+	"BREAK_TYPE"				: "breakType",
+	"BREAK_TYPE_NEXT_LINE"		: "breakTypeNextLine",
+	"FIRST_USE_MESSAGE_SHOWN"	: "firstUseMessageShown",
+	"UPDATE_MESSAGE_1_SHOWN"	: "updateMessage1Shown"
 });

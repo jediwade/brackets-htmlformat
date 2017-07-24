@@ -87,3 +87,14 @@ implementation of "Mustache". Removing HTML Format menu from the Menu bar when t
 #### Update - January 16, 2017
 Fixed issue with the menu bar items not being in the correct order on Windows 10 after ~17 items were added. 
 After ~17 items, the order would be in reverse from order added and all dividers would be at the bottom.
+
+
+#### Update - July 23, 2017
+Lots of changes in this release. Added the ability for the user to set which file extensions this Brackets 
+extension will work in. Added Shift + Enter keyboard shortcut to insert a break tag, plus options related 
+to that feature. The detection of same tags being inserted is improved. Code cleaned up a bit in some areas. 
+Changed the file/folder structure to allow for different translations. Fix bugs with the HTML Format menu 
+being removed when it shouldn't have been if the split editor view was being used. Added a Welcome screen. 
+Added a What's New screen. Started adding Table tags but it just makes the HTML Format menu too tall for a 
+1080p screen (and probably already too tall for laptop screens). Changed the file/folder structure to allow 
+for different locale translations (would need help/volunteers to make new locales happen).

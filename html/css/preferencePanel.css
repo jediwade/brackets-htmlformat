@@ -1,0 +1,277 @@
+/* ################################### */
+/* BRACKETS DEFAULT LIGHT THEME STYLES */
+/* ################################### */
+
+body #htmlFormatPreferences {
+    color:#333333;
+}
+#htmlFormatPreferences.modal {
+    background-color: #dfe2e2 !important;
+    border: 1px solid rgba(0,0,0,0.09) !important;
+}
+#htmlFormatPreferences .modal-header {
+    background: #d4d7d7 !important;
+    border-radius: 4px 4px 0 0 !important;
+    border-bottom: 1px solid #c3c6c5 !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12) !important;
+}
+#htmlFormatPreferences .modal-body {
+    background-color: #dfe2e2 !important;
+}
+#htmlFormatPreferences .modal-footer {
+    text-align: right !important;
+    background-color: #dfe2e2 !important;
+    border-top: 1px solid #c3c6c5 !important;
+    box-shadow: none !important;
+    padding: 10px 15px 12px !important;
+}
+#htmlFormatPreferences input {
+    background-color: #ffffff !important;
+    border: 1px solid #b2b5b5 !important;
+    color: #000000 !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    -webkit-font-smoothing: antialiased !important;
+    box-shadow: inset 0 1px 0 rgba(0,0,0,0.06) !important;
+    border-radius: 3px !important;
+}
+#htmlFormatPreferences input[type="checkbox"] {
+    height: 13px !important;
+    width: 13px !important;
+    vertical-align: middle !important;
+    border: 1px solid #b2b5b5 !important;
+    border-radius: 3px !important;
+    background-color: #e5e9e9 !important;
+    -webkit-appearance: none !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12) !important;
+}
+#htmlFormatPreferences input[type="radio"], 
+#htmlFormatPreferences input[type="checkbox"] {
+    margin: 0 5px 0 0 !important;
+}
+#htmlFormatPreferences input[type="checkbox"]:checked:before {
+    font-weight: bold;
+    color: #333;
+    content: '\2713';
+    -webkit-margin-start: 0;
+    position: relative;
+    left: 2px;
+    top: -7px;
+    font-size: 16px;
+}
+#htmlFormatPreferences .table-striped tbody tr:nth-child(odd) td {
+    background-color: #e6e9e9;
+}
+#htmlFormatPreferences .table-striped tbody tr:nth-child(even) td {
+    background-color: #dfe2e2;
+}
+#htmlFormatPreferences .table-striped #preferenceForm td {
+	border-bottom: 1px solid #aaaaaa !important;
+}
+#htmlFormatPreferences .dark .table-striped #preferenceForm td {
+	border-bottom: 1px solid #e6e9e9 !important;
+}
+#htmlFormatPreferences .table-striped #preferenceForm tr:last-of-type td {
+	border-bottom-style: none !important;
+}
+#htmlFormatPreferences .dialog-title {
+    color: #000000 !important;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    font-size: 22px !important;
+    line-height: 30px !important;
+    font-weight: normal !important;
+}
+#htmlFormatPreferences .btn {
+    background-image: none;
+    background-color: #e5e9e9;
+    color: #333;
+    cursor: default;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+    border: 1px solid #b2b5b5;
+    border-radius: 3px;
+    box-shadow: inset 0 1px rgba(255,255,255,0.5);
+    -webkit-font-smoothing: antialiased;
+    text-shadow: none;
+    margin: 3px 0 3px 3px;
+}
+#htmlFormatPreferences .btn:hover, 
+#htmlFormatPreferences .btn:focus, 
+#htmlFormatPreferences .btn.disabled, 
+#htmlFormatPreferences .btn[disabled] {
+    background-color: #e5e9e9;
+    color: #333;
+}
+#htmlFormatPreferences .btn:focus {
+    border: 1px solid #2893ef;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12),0 0 0 1px #94ceff;
+    color: #333;
+    outline: none;
+}
+#htmlFormatPreferences .btn.primary {
+    background-image: none;
+    background-color: #288edf;
+    border: 1px solid #1474bf;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    color: #fff;
+    text-shadow: none;
+}
+#htmlFormatPreferences .btn.primary:hover, 
+#htmlFormatPreferences .btn.primary:focus, 
+#htmlFormatPreferences .btn.primary.disabled, 
+#htmlFormatPreferences .btn.primary[disabled] {
+    background-color: #288edf;
+}
+#htmlFormatPreferences .btn.primary:focus {
+    border: 1px solid #1474bf;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12),0 0 0 1px #94ceff;
+    outline: none;
+}
+#htmlFormatPreferences .btn.primary:hover,
+#htmlFormatPreferences .btn.primary:focus,
+#htmlFormatPreferences .btn.primary.disabled,
+#htmlFormatPreferences .btn.primary[disabled] {
+    background-color: #288edf;
+}
+#htmlFormatPreferences .btn.primary.active,
+#htmlFormatPreferences .btn.primary:active {
+    background-image: none;
+    background-color: #0380e8;
+    box-shadow: inset 0 1px 0 rgba(0,0,0,0.06);
+    color: #fff;
+}
+#htmlFormatPreferences .btn.primary:focus {
+    border: 1px solid #1474bf;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12),0 0 0 1px #94ceff;
+    outline: none;
+}
+
+
+
+
+
+/* #################################### */
+/* HTML FORMAT PREFERENCE WINDOW STYLES */
+/* #################################### */
+
+#htmlFormatPreferences .modal-header {
+    padding-bottom:0;
+}
+#htmlFormatPreferences .modal-header ul.nav {
+    margin-top:8px;
+    margin-bottom:0;
+    border:none;
+}
+#htmlFormatPreferences .modal-header ul.nav li a {
+    color:#555555 !important;
+}
+#htmlFormatPreferences .modal-header ul.nav li:hover a {
+    background-color:rgba(255,255,255,0.4);
+    border-color:rgba(0,0,0,0.2);
+    border-bottom:1px solid transparent;
+}
+#htmlFormatPreferences .modal-header ul.nav li.active a {
+    background-color:#e6e9e9;
+    border-color:#b2b5b5 #b2b5b5 transparent #b2b5b5;
+}
+#htmlFormatPreferences .modal-header ul.nav li a img {
+    max-width:32px;
+    width:100%;
+    height:auto;
+    margin:0 auto;
+    position:relative;
+    left:50%;
+    transform:translateX(-50%);
+}
+#htmlFormatPreferences .modal-body {
+    overflow-y:scroll;
+}
+
+#htmlFormatPreferences #warning,
+#htmlFormatPreferences #extensions {
+    border-top:none;
+}
+#htmlFormatPreferences #warning {
+	border-bottom:1px solid #aaaaaa;
+	padding: 10px 0px;
+	text-align: center;
+	display: block;
+}
+#htmlFormatPreferences #preferenceForm {
+	margin:0px !important;
+	padding:0px !important;
+}
+#htmlFormatPreferences .tab-pane {
+    min-height:400px;
+}
+#htmlFormatPreferences #extensions input {
+	margin-top:5px;
+	margin-bottom:3px;
+	box-sizing:border-box;
+	height:26px;
+	width:100%;
+}
+#htmlFormatPreferences #preferenceForm label {
+	margin: 0 !important;
+}
+#htmlFormatPreferences #preferenceForm .table {
+	margin-bottom:0px !important;
+}
+#htmlFormatPreferences #preferenceForm .table td {
+	padding-top:12px !important;
+	padding-bottom:12px !important;
+    position:relative;
+}
+#htmlFormatPreferences #preferenceForm .shortcut {
+    
+}
+#htmlFormatPreferences #preferenceForm button[data-button-id="clear"] {
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    margin:0;
+}
+#htmlFormatPreferences #preferenceForm .shortcut_label {
+	padding-bottom:3px;
+	font-weight:bold;
+    font-size:14px;
+}
+#htmlFormatPreferences #preferenceForm .shortcut_modifiers input[type="text"] {
+	margin:0 0 0 10px !important;
+	padding:0 !important;
+}
+#htmlFormatPreferences #preferenceForm .shortcut_modifiers label {
+	display:inline-block !important;
+	margin-right:10px !important;
+	margin-left:10px !important;
+}
+#htmlFormatPreferences #preferenceForm .shortcut_modifiers label:first-child {
+	margin-left:0 !important;
+}
+#htmlFormatPreferences #preferenceForm .shortcut_modifier_char {
+	width:2em !important;
+	text-align:center !important;
+	position: relative !important;
+	bottom: 2px !important;
+}
+#htmlFormatPreferences .btn.secondary {
+	background-image: none;
+	background-color: #37bf3d;
+	border: 1px solid #288b2c;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+	color: #ffffff;
+	text-shadow: none;
+}
+#htmlFormatPreferences .btn.secondary:focus {
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.12),0 0 0 1px #94ffce;
+}
+#htmlFormatPreferences .btn.secondary:active {
+	border: 1px solid #288b2c;
+	background-color: #2c9a31;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px #acffaf;
+	outline: none;
+	color: #ffffff;
+}
