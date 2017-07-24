@@ -514,7 +514,6 @@ define(function (require, exports, module) {
             styleStart = entireLine.indexOf("style=", styleStart);
             
 			if (styleStart !== -1) {
-                console.log("ran");
 				closingQuote = entireLine.charAt(entireLine.indexOf("style=") + 6);// get quote type, single or double
 				styleStart += 7;// offset to start within the style attribute
 				styleEnd = entireLine.indexOf(closingQuote, styleStart);
