@@ -8,6 +8,12 @@ tags around highlighted copy in HTML documents. My coworkers started talking abo
 and that I should use it. I gave it a shot, but the lack of common HTML hotkeys caused me to 
 look into making an extension for adding in something that I use everyday.
 
+## Known Issues
+
+Using the Shift+Enter to insert a break tag can still function inside the \<head\> and inside 
+HTML tags.
+
+## Update History
 
 #### Update - June 12, 2015
 Added preference menu option to be able to set keyboard shortcuts for any of the HTML tags/styles 
@@ -98,3 +104,11 @@ being removed when it shouldn't have been if the split editor view was being use
 Added a What's New screen. Started adding Table tags but it just makes the HTML Format menu too tall for a 
 1080p screen (and probably already too tall for laptop screens). Changed the file/folder structure to allow 
 for different locale translations (would need help/volunteers to make new locales happen).
+
+#### Update - August 3, 2017
+Just changing my GitHub name/URL back to jediwade because the Brackets Extension Registry keeps track of 
+who created what extension by their GitHub username and not their email address. I had changed my username 
+to match my email and website, deciding to be a bit more professional, but I was then unable to update this 
+Brackets extension. I emailed the Registry people but they still have not replied. Because this makes me 
+fear that someone could just change their name to by mine and then delete the extension, I am reverting 
+my GitHub username back and needing to change the URL in the package.json file.
