@@ -12,6 +12,7 @@ look into making an extension for adding in something that I use everyday.
 
 Using the Shift+Enter to insert a break tag can still function inside the \<head\> and inside 
 HTML tags.
+Numbers cannot be entered when using the Insert empty tag feature.
 
 ## Update History
 
