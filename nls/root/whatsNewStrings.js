@@ -21,10 +21,10 @@
 /* jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50, eqeq: true, white: true */
 /* global define */
 /*
-This JS file is used for setting the copy that appears in both the HTML Format Preference Window as well as the labels for the items in the HTML Format menu and right-click menu.
+This JS file is used for setting the copy that appears in "What's New" popup that appears whenever there is an update to the HTML Format extension.
 */
 define({
 	"TITLE"		: "What's New in HTML Format",
-	"CONTENT"	: "<h4>July 23, 2017</h4>Lots of behind-the-scenes updates to the code, some bug fixes, and a few new features. Complete list of updates below:<br><ul><li>This pop-up letting you know whats new!</li><li>Improving the detection of already existing tags when trying to insert the same tag (for bold, italic, anchor, headers, etc).</li><li>Properly handle adding/removing the HTML format menu when there are multiple files open at the same time through the split editor view.</li><li>Added insert break tag with Shift + Enter, plus some extra preferences related to this.</li><li>Ability to set which file extensions the HTML Format extension will work for instead of being the three hard-coded ones before (html, php, asp). Set this in the HTML Format preferences.</li><li>Started looking into the ability to add an HTML comment option the same way you add any other tag.</li><li>Added a new Save &amp; Reload button to the HTML Format preferences and made the Save button not force Brackets to reload.</li><li>Added a Clear button to each element tag in the HTML Format preferences to easily clear out an assigned keyboard shortcut.</li><li>Updated the HTML Format preference window to have a tabbed view.</li><li>Updated the styles for the HTML Format preferences window to always match the default theme.</li><li>Code clean-up and some restructuring that would enable this extension to support multiple locales (any volunteers?).</li>",
+	"CONTENT"	: "<h4>November 20, 2017</h4>Minor bug fixes. Big changes coming soon. Adding the ability to create your own tags and disable most of the existing ones. I know the HTML Format menu is rather lengthy, especially on more widescreen displays with lower resolutions. Also updating the styling of the HTML Format Preferences that should allow it to work with any theme you have set and not by forced to look at my prefered default light theme.",
 	"BTN_CLOSE"	: "Close"
 });

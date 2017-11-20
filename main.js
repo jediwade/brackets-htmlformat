@@ -368,8 +368,8 @@ define(function (require, exports, module) {
 		_preferences.set(PreferenceStrings.PREFERENCES, [_control, "Shift", null, null, ","]);
 	}
 	
-	if (!_preferences.get(AdditionalPrefStrings.UPDATE_MESSAGE_1_SHOWN) && _preferences.get(AdditionalPrefStrings.FIRST_USE_MESSAGE_SHOWN)) {
-		_preferences.set(AdditionalPrefStrings.UPDATE_MESSAGE_1_SHOWN, true);
+	if (!_preferences.get(AdditionalPrefStrings.UPDATE_MESSAGE_2_SHOWN) && _preferences.get(AdditionalPrefStrings.FIRST_USE_MESSAGE_SHOWN)) {
+		_preferences.set(AdditionalPrefStrings.UPDATE_MESSAGE_2_SHOWN, true);
 		
 		Dialogs.showModalDialogUsingTemplate(Mustache.render(require("text!html/whatsNewFirstUse.html"), WhatsNewStrings));
 	}
@@ -514,6 +514,7 @@ define(function (require, exports, module) {
             styleStart = entireLine.indexOf("style=", styleStart);
             
 			if (styleStart !== -1) {
+                console.log("ran");
 				closingQuote = entireLine.charAt(entireLine.indexOf("style=") + 6);// get quote type, single or double
 				styleStart += 7;// offset to start within the style attribute
 				styleEnd = entireLine.indexOf(closingQuote, styleStart);
@@ -601,47 +602,53 @@ define(function (require, exports, module) {
 	/**
 	* Generates an HTML tag based on the param received.
 	* @param {!string} tag - The HTML tag that should be used to check for doubles
-	* @param {?number} startIndex - The starting index position to use when getting the tag open index.
 	* @returns {!boolean} Whether or not the tag being inserted at the current position would be surrounded by the same tag.
 	* @private
 	*/
-	function _checkForDoubles(tag, startIndex) {
-		startIndex = (startIndex) ? startIndex : 0;
-		var lineString = _currentDoc.getRange({line:_editor.getCursorPos().line, ch:0}, {line:_editor.getCursorPos().line+1, ch:0});
-		var openTag = "<" + tag + ">";
-		var closeTag = "</" + tag + ">";
-		var tagOpenIndex = lineString.indexOf(openTag, startIndex);
+	function _checkForDoubles(tag) {
+		//var lineString = _currentDoc.getRange({line:_editor.getCursorPos().line, ch:0}, {line:_editor.getCursorPos().line+1, ch:0});
+		let existingTags = [];
+		let lineString = _currentDoc.getLine(_editor.getCursorPos().line);
+		let openTag = "<" + tag + ">";
+		let closeTag = "</" + tag + ">";
+		let tagOpenIndex = lineString.indexOf(openTag);
+		
+		// build list of open/close tags matching the one trying to be added
+		while (tagOpenIndex !== -1) {
+			let closeIndex = lineString.indexOf(closeTag, (tagOpenIndex + openTag.length));
+			
+			// check to see if closeIndex is not -1, meaning a closing tag matching the one being added was found
+			if (closeIndex !== -1) {
+				existingTags.push({openStart:tagOpenIndex, openEnd:tagOpenIndex + openTag.length, closeStart:closeIndex, closeEnd:closeIndex + closeTag.length});
+			}
+			else {
+				existingTags.push({openStart:tagOpenIndex, openEnd:tagOpenIndex + openTag.length, closeStart:-1, closeEnd:-1});
+			}
+			
+			tagOpenIndex = lineString.indexOf(openTag, tagOpenIndex + openTag.length);
+		}
 		
 		// if the tag about to be inserted was found to already be present in the current line of HTML markup
-		if (tagOpenIndex !== -1) {
-			var tagCloseIndex = lineString.indexOf(closeTag, (tagOpenIndex + openTag.length));
+		if (existingTags.length !== 0) {
+			let i = 0;
+			let cursorIndex = ((_selection) ? _selection.start.ch : _editor.getCursorPos().ch);
 			
-			// if the closing tag was found in the line of markup that the current insert was to be added to
-			if (tagCloseIndex !== -1) {
-				// closing tag was found right in front of the position of where the new tag was to be added
-				if ((tagCloseIndex + closeTag.length) <= ((_selection) ? _selection.start.ch : _editor.getCursorPos().ch)) {
-					
-					tagOpenIndex = lineString.indexOf(openTag, (tagCloseIndex + closeTag.length));
-					
-					// more of the same tag were found in the current line of markup, so do search again to be certain that the insert point isn't within an existing tag of the same kind
-					if (tagOpenIndex !== -1) {
-						return _checkForDoubles(tag, tagOpenIndex);
-					}
-					else {
-						return false;
-					}
-				}
-				else {
+			while (i < existingTags.length) {
+				// cursor was located in between existing tag matching the one trying to be added
+				if (cursorIndex > existingTags[i].openStart && cursorIndex < existingTags[i].closeEnd) {
 					return true;
 				}
+				// cursor was located after opening of tag matching the one trying to be added but couldn't find the close. assuming this one is a double.
+				else if (existingTags[i].closeEnd === -1 && cursorIndex > existingTags[i].openStart) {
+					return true;
+				}
+				i += 1;
 			}
-			// Opening tag matching the tag attempting to insert was found in front of the cursor position and closing tag could not be found on this line. Assume double.
-			else if (tagOpenIndex < _editor.getCursorPos().ch) {
-				return true;
-			}
+			
+			return false;// cursor not located within a tag of same type
 		}
 		else {
-			return false;
+			return false;// no tags matching the kind being added found
 		}
 	}
 	

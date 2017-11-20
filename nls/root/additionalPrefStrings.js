@@ -32,5 +32,5 @@ define({
 	"BREAK_TYPE"				: "breakType",
 	"BREAK_TYPE_NEXT_LINE"		: "breakTypeNextLine",
 	"FIRST_USE_MESSAGE_SHOWN"	: "firstUseMessageShown",
-	"UPDATE_MESSAGE_1_SHOWN"	: "updateMessage1Shown"
+	"UPDATE_MESSAGE_2_SHOWN"	: "updateMessage2Shown"
 });
