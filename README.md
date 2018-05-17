@@ -17,6 +17,8 @@ Using the Shift+Enter to insert a break tag can still function inside the \<head
 HTML tags.
 
 Numbers cannot be entered when using the Insert empty tag feature.
+
+The command "Insert empty tag" does not work correctly when multiple lines of text (made from line breaks, line wrapping ok) are selected.
 <br><br>
 
 ## Update History
